@@ -1,0 +1,216 @@
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <img src="alonso.png" alt="Alonso Luz y Gas" class="sidebar__logo-img" />
+    </div>
+    <nav class="sidebar__nav">
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar__link"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Dashboard</a>
+      <a routerLink="/admin/clientes" routerLinkActive="active" class="sidebar__link"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Clientes</a>
+      <a routerLink="/admin/citas" routerLinkActive="active" class="sidebar__link"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Citas</a>
+      <a routerLink="/admin/turnos" routerLinkActive="active" class="sidebar__link"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Técnicos</a>
+      <a routerLink="/admin/itinerario" routerLinkActive="active" class="sidebar__link"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> Itinerario</a>
+    </nav>
+    <div class="sidebar__footer">
+      <button class="sidebar__logout" (click)="logout()">Cerrar sesion</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="top-bar__left">
+        <h1>Clientes</h1>
+        <span class="top-bar__stat">{{ totalClientes() }} registrados</span>
+      </div>
+      <div class="top-bar__right">
+        <div class="zona-filter">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <select [ngModel]="zonaFiltro()" (ngModelChange)="zonaFiltro.set($event)">
+            @for (zona of ZONAS; track zona.value) {
+              <option [value]="zona.value">{{ zona.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="search-inline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" placeholder="Buscar por nombre, NIF, email, dirección..." />
+        </div>
+        <button class="btn btn--primary" (click)="openNew()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo cliente
+        </button>
+      </div>
+    </div>
+
+    <!-- ZONA IMPORTAR EXCEL -->
+    <div class="excel-dropzone" [class.excel-dropzone--active]="dragOver()"
+         (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+      <div class="excel-dropzone__content">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <div class="excel-dropzone__text">
+          <strong>Arrastra aquí tu archivo Excel</strong>
+          <span>Acepta .xlsx, .xls y .csv con datos de clientes</span>
+        </div>
+        <label class="btn btn--outline btn--sm excel-dropzone__btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          O selecciona archivo
+          <input type="file" accept=".xlsx,.xls,.csv" (change)="onFileSelect($event)" hidden />
+        </label>
+      </div>
+      <button class="btn btn--danger btn--sm excel-dropzone__reset" (click)="resetTodo()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Borrar todo
+      </button>
+    </div>
+
+    <!-- MENSAJE DE IMPORTACION -->
+    @if (importStatus(); as status) {
+      <div class="import-alert" [class]="'import-alert--' + status.type">
+        @if (status.type === 'info') {
+          <span class="import-alert__spinner"></span>
+        }
+        <span>{{ status.message }}</span>
+        <button class="btn-icon" (click)="dismissImport()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    }
+
+
+
+    <!-- TABLA DE CLIENTES -->
+    <div class="clientes-table-wrap">
+      <table class="clientes-table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Contacto</th>
+            <th>Dirección</th>
+            <th>Equipo</th>
+            <th>Fecha registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cliente of clientesOrdenados(); track cliente.id) {
+            <tr>
+              <td class="td-cliente">
+                <div class="cliente-cell">
+                  <div class="cliente-cell__info">
+                    <span class="cliente-cell__name">{{ cliente.nombre }}</span>
+                    <span class="cliente-cell__nif">{{ cliente.nif }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="td-contacto">
+                <div class="contacto-cell">
+                  <span class="contacto-cell__email">{{ cliente.correo_electronico }}</span>
+                  <span class="contacto-cell__phone">{{ cliente.telefono }}</span>
+                </div>
+              </td>
+              <td class="td-direccion">
+                <span class="dir-cell">{{ cliente.direccion }}, {{ cliente.ciudad }}</span>
+              </td>
+              <td class="td-equipo">
+                <span class="equipo-badge" [class]="getTipoClass(cliente.tipo_equipo)">{{ getTipoLabel(cliente.tipo_equipo) }}</span>
+                @if (cliente.marca_equipo) {
+                  <span class="equipo-marca">{{ cliente.marca_equipo }}</span>
+                }
+              </td>
+              <td class="td-fecha">
+                <span class="fecha-cell">{{ formatFecha(cliente.fecha_registro) }}</span>
+              </td>
+              <td class="td-acciones">
+                <button class="btn-icon" (click)="edit(cliente)" title="Editar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="btn-icon btn-icon--danger" (click)="delete(cliente.id!)" title="Eliminar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="table-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <span>No se encontraron clientes</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FORMULARIO MODAL -->
+    @if (showForm()) {
+      <div class="form-overlay" (click)="cancel()">
+        <div class="form-card" (click)="$event.stopPropagation()">
+          <h2>{{ editingCliente() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+          <form (ngSubmit)="save()">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nombre completo</label>
+                <input type="text" [(ngModel)]="form.nombre" name="nombre" required />
+              </div>
+              <div class="form-group">
+                <label>NIF</label>
+                <input type="text" [(ngModel)]="form.nif" name="nif" required />
+              </div>
+              <div class="form-group">
+                <label>Correo electronico</label>
+                <input type="email" [(ngModel)]="form.correo_electronico" name="email" required />
+              </div>
+              <div class="form-group">
+                <label>Telefono</label>
+                <input type="tel" [(ngModel)]="form.telefono" name="telefono" />
+              </div>
+              <div class="form-group">
+                <label>Tipo de equipo</label>
+                <select [(ngModel)]="form.tipo_equipo" name="tipo_equipo">
+                  <option value="caldera_gas">Caldera Gas</option>
+                  <option value="caldera_gasoil">Caldera Gasoil</option>
+                  <option value="termo_electrico">Termo Electrico</option>
+                  <option value="aerotermia">Aerotermia</option>
+                  <option value="osmosis">Ósmosis</option>
+                  <option value="descalcificador">Descalcificador</option>
+                  <option value="ozono">Ozono</option>
+                  <option value="clima">Aire Acondicionado</option>
+                  <option value="fotovoltaica">Fotovoltaica</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Marca equipo</label>
+                <input type="text" [(ngModel)]="form.marca_equipo" name="marca_equipo" />
+              </div>
+              <div class="form-group form-group--full">
+                <label>Direccion</label>
+                <input type="text" [(ngModel)]="form.direccion" name="direccion" required />
+              </div>
+              <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" [(ngModel)]="form.ciudad" name="ciudad" />
+              </div>
+              <div class="form-group">
+                <label>Codigo postal</label>
+                <input type="text" [(ngModel)]="form.codigo_postal" name="cp" />
+              </div>
+              <div class="form-group form-group--full">
+                <label>Notas</label>
+                <textarea [(ngModel)]="form.notas" name="notas" rows="2"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn--outline" (click)="cancel()">Cancelar</button>
+              <button type="submit" class="btn btn--primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+  </main>
+</div>

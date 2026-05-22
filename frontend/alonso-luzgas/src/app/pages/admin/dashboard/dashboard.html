@@ -1,0 +1,668 @@
+﻿@if (!zonaSeleccionada()) {
+<!-- PANTALLA COMPLETA: SELECCION DE ZONA -->
+<div class="zone-select-screen">
+  <header class="zone-select__header">
+    <img src="alonso.png" alt="Alonso Luz y Gas" class="zone-select__logo" />
+    <div class="zone-select__user">
+      <span>{{ authService.user()?.first_name }} {{ authService.user()?.last_name }}</span>
+      <button class="zone-select__logout" (click)="logout()">Cerrar sesion</button>
+    </div>
+  </header>
+
+  <div class="zone-select__body">
+    <h1 class="zone-select__title">Panel de Coordinacion</h1>
+    <p class="zone-select__subtitle">Selecciona una zona de operacion para comenzar</p>
+
+    <div class="zonas-grid">
+      @for (zona of cargaZonas(); track zona.zona_id) {
+        <div class="zona-card" (click)="seleccionarZona(zona.zona_id)">
+          <div class="zona-card__header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="zona-card__name">{{ zona.zona }}</span>
+          </div>
+          <div class="zona-card__stats">
+            <div class="zona-card__stat">
+              <span class="zona-card__stat-value">{{ zona.clientes_total }}</span>
+              <span class="zona-card__stat-label">Clientes</span>
+            </div>
+            <div class="zona-card__stat">
+              <span class="zona-card__stat-value">{{ zona.tecnicos_asignados.length }}</span>
+              <span class="zona-card__stat-label">Tecnicos</span>
+            </div>
+            <div class="zona-card__stat">
+              <span class="zona-card__stat-value">{{ zona.clientes_sin_asignar }}</span>
+              <span class="zona-card__stat-label">Sin asignar</span>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="zona-card zona-card--empty">No hay zonas configuradas</div>
+      }
+    </div>
+  </div>
+</div>
+
+} @else {
+<!-- VISTA CON SIDEBAR: ZONA SELECCIONADA -->
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <img src="alonso.png" alt="Alonso Luz y Gas" class="sidebar__logo-img" />
+    </div>
+
+    <div class="sidebar__zona-selector">
+      <div class="sidebar__zona-badge" (click)="zonaDropdownOpen.set(!zonaDropdownOpen())">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>{{ zonaNombre() }}</span>
+        <svg class="sidebar__zona-chevron" [class.sidebar__zona-chevron--open]="zonaDropdownOpen()" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      @if (zonaDropdownOpen()) {
+        <div class="sidebar__zona-dropdown">
+          @for (z of cargaZonas(); track z.zona_id) {
+            <button class="sidebar__zona-option" [class.sidebar__zona-option--active]="z.zona_id === zonaSeleccionada()" (click)="cambiarZona(z.zona_id)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>{{ z.zona }}</span>
+              <span class="sidebar__zona-option-count">{{ z.clientes_total }}</span>
+            </button>
+          }
+          <button class="sidebar__zona-option sidebar__zona-option--back" (click)="volverAlPanel()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            <span>Volver al panel</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    <nav class="sidebar__nav">
+      <a (click)="vistaActiva.set('dashboard')" [class.active]="vistaActiva() === 'dashboard'" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a (click)="vistaActiva.set('clientes')" [class.active]="vistaActiva() === 'clientes'" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clientes
+      </a>
+      <a (click)="vistaActiva.set('citas')" [class.active]="vistaActiva() === 'citas'" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Citas
+      </a>
+      <a (click)="vistaActiva.set('tecnicos')" [class.active]="vistaActiva() === 'tecnicos'" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Tecnicos
+      </a>
+      <a (click)="vistaActiva.set('itinerario')" [class.active]="vistaActiva() === 'itinerario'" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+        Itinerario
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <span class="sidebar__user-name">{{ authService.user()?.first_name }} {{ authService.user()?.last_name }}</span>
+        <span class="sidebar__user-role">{{ authService.user()?.rol | titlecase }}</span>
+      </div>
+      <button class="sidebar__logout" (click)="logout()">Cerrar sesion</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    @switch (vistaActiva()) {
+      @case ('dashboard') {
+        <header class="main-content__header">
+          <h1>{{ zonaNombre() }}</h1>
+          <p>{{ zonaInfo()?.clientes_total }} clientes · {{ zonaInfo()?.tecnicos_asignados?.length }} tecnicos asignados</p>
+        </header>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="stat-card__info">
+              <span class="stat-card__value">{{ zonaInfo()?.clientes_total }}</span>
+              <span class="stat-card__label">Clientes</span>
+            </div>
+          </div>
+          <div class="stat-card stat-card--success">
+            <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="stat-card__info">
+              <span class="stat-card__value">{{ stats().completadas_hoy }}/{{ stats().tareas_hoy }}</span>
+              <span class="stat-card__label">Tareas hoy</span>
+            </div>
+          </div>
+          <div class="stat-card stat-card--warning">
+            <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="stat-card__info">
+              <span class="stat-card__value">{{ stats().incidencias }}</span>
+              <span class="stat-card__label">Incidencias</span>
+            </div>
+          </div>
+          <div class="stat-card stat-card--info">
+            <div class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+            <div class="stat-card__info">
+              <span class="stat-card__value">{{ zonaInfo()?.tecnicos_asignados?.length }}</span>
+              <span class="stat-card__label">Tecnicos activos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="week-calendar">
+          <div class="week-calendar__nav">
+            <button class="week-calendar__arrow" (click)="semanaAnterior()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="week-calendar__title">
+              <span class="week-calendar__label">{{ semanaLabel() }}</span>
+              <span class="week-calendar__count">{{ citasSemana() }} citas esta semana</span>
+            </div>
+            <button class="week-calendar__arrow" (click)="semanaSiguiente()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            @if (semanaOffset() !== 0) {
+              <button class="week-calendar__today" (click)="semanaActual()">Hoy</button>
+            }
+          </div>
+          <div class="week-calendar__grid">
+            @for (dia of diasSemana(); track dia.fecha) {
+              <div class="week-day" [class.week-day--today]="dia.esHoy" [class.week-day--empty]="dia.clientes.length === 0">
+                <div class="week-day__header">
+                  <span class="week-day__name">{{ dia.diaNombre }}</span>
+                  <span class="week-day__num" [class.week-day__num--today]="dia.esHoy">{{ dia.diaNum }}</span>
+                  @if (dia.clientes.length > 0) {
+                    <span class="week-day__badge">{{ dia.clientes.length }}</span>
+                  }
+                </div>
+                <div class="week-day__clients">
+                  @for (c of dia.clientes; track c.id) {
+                    <div class="week-client">
+                      <span class="week-client__dot" [class]="getTipoClass(c.tipo_equipo)"></span>
+                      <span class="week-client__name">{{ c.nombre }}</span>
+                    </div>
+                  } @empty {
+                    <span class="week-day__empty">&#x2014;</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="tecnico-cards">
+          <h2>Tecnicos</h2>
+          <div class="tecnico-cards__grid">
+            @for (it of itinerariosZona(); track it.tecnico.id) {
+              <div class="tecnico-card" [class.tecnico-card--active]="it.estado_actual === 'en_servicio' || it.estado_actual === 'en_ruta'" [class.tecnico-card--expanded]="tecnicoExpandido() === it.tecnico.id">
+                <div class="tecnico-card__header" (click)="toggleTecnico(it.tecnico.id!)">
+                  @if (it.tecnico.foto) {
+                    <img class="tecnico-card__avatar tecnico-card__avatar--img" [src]="it.tecnico.foto" [alt]="it.tecnico.first_name + ' ' + it.tecnico.last_name" />
+                  } @else {
+                    <div class="tecnico-card__avatar">{{ it.tecnico.first_name[0] }}{{ it.tecnico.last_name[0] }}</div>
+                  }
+                  <div class="tecnico-card__info">
+                    <span class="tecnico-card__name">{{ it.tecnico.first_name }} {{ it.tecnico.last_name }}</span>
+                    <span class="tecnico-card__zona">{{ it.tecnico.vehiculo }}</span>
+                  </div>
+                  <svg class="tecnico-card__chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="tecnico-card__progress">
+                  <div class="tecnico-card__bar">
+                    <div class="tecnico-card__bar-fill" [style.width.%]="it.progreso"></div>
+                  </div>
+                  <span class="tecnico-card__progress-text">{{ it.tareas_completadas }}/{{ it.tareas_total }} tareas</span>
+                </div>
+                @if (tecnicoExpandido() === it.tecnico.id) {
+                  <div class="tecnico-card__tasks">
+                    @for (p of it.paradas; track p.id) {
+                      <div class="task-item" [class.task-item--done]="p.estado === 'realizado'" [class.task-item--active]="p.estado === 'en_servicio'" [class.task-item--incident]="p.estado === 'incidencia'">
+                        <span class="task-item__order">{{ p.orden }}</span>
+                        <div class="task-item__info">
+                          <span class="task-item__client">{{ p.cliente?.nombre || 'Cliente #' + p.cliente_id }}</span>
+                          <span class="task-item__service">{{ p.tipo_servicio | titlecase }} · {{ p.hora_estimada_llegada || '--:--' }}</span>
+                        </div>
+                        <span [class]="getEstadoBadgeClass(p.estado)">{{ getEstadoLabel(p.estado) }}</span>
+                      </div>
+                    } @empty {
+                      <div class="task-item task-item--empty">Sin tareas asignadas hoy</div>
+                    }
+                  </div>
+                }
+              </div>
+            } @empty {
+              <div class="tecnico-cards__empty">No hay tecnicos asignados a esta zona</div>
+            }
+          </div>
+        </div>
+      }
+
+      @case ('clientes') {
+        <header class="main-content__header">
+          <h1>Clientes</h1>
+          <p>{{ clientesZona().length }} clientes en {{ zonaNombre() }}</p>
+        </header>
+
+        <!-- ZONA IMPORTAR EXCEL (siempre visible) -->
+        <div class="excel-dropzone" [class.excel-dropzone--active]="dragOver()"
+             (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+          <div class="excel-dropzone__content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <div class="excel-dropzone__text">
+              <strong>Arrastra aquí tu archivo Excel</strong>
+              <span>Acepta .xlsx, .xls y .csv — los turnos se generan automáticamente</span>
+            </div>
+            <label class="btn btn--outline btn--sm excel-dropzone__btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              O selecciona archivo
+              <input type="file" accept=".xlsx,.xls,.csv" (change)="onFileSelect($event)" hidden />
+            </label>
+          </div>
+          <button class="btn btn--danger btn--sm excel-dropzone__reset" (click)="resetTodo()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Borrar todo
+          </button>
+        </div>
+
+        <!-- Banner de estado de importación -->
+        @if (importStatus()) {
+          <div class="import-banner import-banner--{{ importStatus()!.type }}">
+            <span>{{ importStatus()!.message }}</span>
+            <button class="import-banner__close" (click)="dismissImport()">✕</button>
+          </div>
+        }
+
+        <!-- Resumen post-importación -->
+        @if (resultadoTurnos()) {
+          <div class="import-result">
+            <h4>Resultado de la importación</h4>
+            <div class="import-result__stats">
+              <div class="import-result__stat">
+                <span class="import-result__num">{{ resultadoImport()?.clientes_creados ?? 0 }}</span>
+                <span>Clientes nuevos</span>
+              </div>
+              <div class="import-result__stat">
+                <span class="import-result__num">{{ resultadoImport()?.clientes_actualizados ?? 0 }}</span>
+                <span>Actualizados</span>
+              </div>
+              <div class="import-result__stat">
+                <span class="import-result__num">{{ resultadoTurnos()?.turnos_creados ?? 0 }}</span>
+                <span>Turnos creados</span>
+              </div>
+              <div class="import-result__stat">
+                <span class="import-result__num">{{ resultadoTurnos()?.tareas_asignadas ?? 0 }}</span>
+                <span>Tareas asignadas</span>
+              </div>
+            </div>
+            @if ((resultadoTurnos()?.resumen_por_tecnico ?? []).length > 0) {
+              <div class="import-result__tecnicos">
+                @for (r of resultadoTurnos()!.resumen_por_tecnico; track r.tecnico_id) {
+                  <div class="import-result__tecnico">
+                    <span class="import-result__tecnico-name">{{ r.tecnico }}</span>
+                    <span class="badge badge--primary">{{ r.tareas }} tareas</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (importando()) {
+          <div class="import-banner import-banner--info">
+            <span class="import-banner__spinner"></span>
+            <span>Procesando archivo...</span>
+          </div>
+        }
+
+
+        <div class="clientes-toolbar">
+          <div class="clientes-search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar por nombre, dirección, teléfono..." [value]="busquedaCliente()" (input)="busquedaCliente.set($any($event.target).value)" class="clientes-search__input" />
+          </div>
+        </div>
+
+        <div class="clientes-table-wrap">
+          <table class="clientes-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Equipo</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of clientesZona(); track c.id) {
+                <tr>
+                  <td>
+                    <div class="clientes-table__name">{{ c.nombre }}</div>
+                    <div class="clientes-table__nif">{{ c.nif }}</div>
+                  </td>
+                  <td>
+                    <div>{{ c.direccion }}</div>
+                    <div class="clientes-table__city">{{ c.ciudad }}, {{ c.codigo_postal }}</div>
+                  </td>
+                  <td>{{ c.telefono }}</td>
+                  <td><span class="badge badge--muted">{{ c.tipo_equipo | titlecase }}</span></td>
+                  <td>
+                    @if (c.activo) {
+                      <span class="badge badge--success">Activo</span>
+                    } @else {
+                      <span class="badge badge--muted">Inactivo</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5" class="clientes-table__empty">No se encontraron clientes</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @case ('citas') {
+        <header class="main-content__header">
+          <h1>Citas</h1>
+          <p>Calendario de citas de {{ zonaNombre() }}</p>
+        </header>
+        <div class="placeholder-view">
+          <p>Vista de citas filtrada por {{ zonaNombre() }} (en desarrollo)</p>
+        </div>
+      }
+
+      @case ('tecnicos') {
+        @if (tecnicoSeleccionadoInfo(); as tec) {
+          <!-- ══════ VISTA DETALLE: un solo técnico con su turno completo ══════ -->
+          <div class="tecnico-detail-view">
+            <button class="tecnico-detail-view__back" (click)="tecnicoSeleccionado.set(null)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              Volver a tecnicos
+            </button>
+
+            <header class="tecnico-detail-view__header">
+              @if (tec.foto) {
+                <img class="tecnico-detail-view__avatar" [src]="tec.foto" [alt]="tec.first_name + ' ' + tec.last_name" />
+              } @else {
+                <div class="tecnico-detail-view__avatar tecnico-detail-view__avatar--initials">{{ tec.first_name[0] }}{{ tec.last_name[0] }}</div>
+              }
+              <div class="tecnico-detail-view__titles">
+                <h1>{{ tec.first_name }} {{ tec.last_name }}</h1>
+                <p>{{ tec.especialidad | titlecase }} · {{ tec.vehiculo }} · {{ tec.telefono || '—' }}</p>
+              </div>
+              @if (googleMapsUrl()) {
+                <a class="tecnico-detail-view__maps-btn" [href]="googleMapsUrl()" target="_blank" rel="noopener">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                  Ver itinerario en Google Maps
+                </a>
+              }
+            </header>
+
+            <!-- Turnos del técnico: un panel por día (estilo "turnos") -->
+            @for (turno of turnosTecnicoSeleccionado(); track turno.id) {
+              <div class="turno-panel">
+                <div class="turno-panel__header">
+                  <div class="turno-panel__meta">
+                    <span class="turno-panel__fecha">{{ formatFechaConDia(turno.fecha) }}</span>
+                    <span class="turno-panel__tipo">Turno {{ turno.tipo_turno === 'manana' ? 'Mañana' : turno.tipo_turno === 'tarde' ? 'Tarde' : 'Completo' }}</span>
+                    <span class="turno-panel__count">{{ getTareasTitulares(turno).length }} citas</span>
+                  </div>
+                  <div class="turno-panel__actions">
+                    <button class="btn btn--route btn--sm" (click)="openRouteMapTurno(turno.id!)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                      Ver itinerario
+                    </button>
+                  </div>
+                </div>
+
+                <div class="timeline">
+                  @for (tarea of getTareasTitulares(turno); track tarea.id; let last = $last) {
+                    <div class="timeline__item" [class]="'timeline__item--' + tarea.estado">
+                      <div class="timeline__left">
+                        <span class="timeline__hora">{{ tarea.hora_estimada }}</span>
+                        <span class="timeline__duracion">~{{ tarea.duracion_estimada }}min</span>
+                      </div>
+                      <div class="timeline__track">
+                        <div class="timeline__dot">
+                          @if (tarea.estado === 'completada') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                          } @else if (tarea.estado === 'en_curso') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          } @else if (tarea.estado === 'incidencia') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                          } @else {
+                            <span class="timeline__dot-num">{{ tarea.orden }}</span>
+                          }
+                        </div>
+                        @if (!last || getReservasTurno(turno).length > 0) {
+                          <div class="timeline__line"></div>
+                        }
+                      </div>
+                      <div class="timeline__card">
+                        <div class="timeline__card-header">
+                          <div class="timeline__card-title">
+                            <h4 class="timeline__client-name">{{ getClienteName(tarea.cliente_id) }}</h4>
+                            <span class="timeline__servicio-badge">{{ getTipoLabel(tarea.tipo_servicio) }}</span>
+                          </div>
+                          <div class="timeline__badges">
+                            <span class="badge badge--{{ getConfirmacionClass(tarea.confirmacion) }}">{{ getConfirmacionLabel(tarea.confirmacion) }}</span>
+                            <span class="badge badge--{{ getEstadoClass(tarea.estado) }}">{{ tarea.estado === 'en_curso' ? 'En curso' : tarea.estado === 'incidencia' ? 'Incidencia' : (tarea.estado | titlecase) }}</span>
+                            @if (tarea.promovido_desde_reserva) {
+                              <span class="badge badge--info">Promovido</span>
+                            }
+                          </div>
+                        </div>
+                        <div class="timeline__card-body">
+                          <div class="timeline__card-info">
+                            <span class="timeline__card-equipo">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                              {{ getClienteEquipo(tarea.cliente_id) }}
+                            </span>
+                            <span class="timeline__card-dir">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                              {{ getClienteDireccion(tarea.cliente_id) }}, {{ getClienteCiudad(tarea.cliente_id) }}
+                            </span>
+                            <span class="timeline__card-tel">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+                              {{ getClienteTelefono(tarea.cliente_id) }}
+                            </span>
+                          </div>
+                          @if (tarea.descripcion) {
+                            <p class="timeline__card-desc">{{ tarea.descripcion }}</p>
+                          }
+                          @if (tarea.incidencia) {
+                            <div class="timeline__card-incidencia">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                              {{ tarea.incidencia }}
+                            </div>
+                          }
+                        </div>
+                        <div class="timeline__card-actions">
+                          @if (tarea.estado === 'pendiente') {
+                            <button class="btn btn--sm btn--outline" (click)="changeEstado(turno.id!, tarea.id!, 'en_curso')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                              Iniciar
+                            </button>
+                          }
+                          @if (tarea.estado === 'en_curso') {
+                            <button class="btn btn--sm btn--success" (click)="changeEstado(turno.id!, tarea.id!, 'completada')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                              Completar
+                            </button>
+                            <button class="btn btn--sm btn--outline-danger" (click)="changeEstado(turno.id!, tarea.id!, 'incidencia')">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                              Incidencia
+                            </button>
+                          }
+                          <button class="btn-icon btn-icon--danger" title="Quitar" (click)="removeTarea(turno.id!, tarea.id!)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  } @empty {
+                    <p class="turno-panel__empty">Sin citas asignadas este día</p>
+                  }
+
+                  <!-- Reservas -->
+                  @if (getReservasTurno(turno).length > 0) {
+                    <div class="timeline__separator">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                      <span>Clientes en reserva</span>
+                    </div>
+                    @for (reserva of getReservasTurno(turno); track reserva.id; let lastR = $last) {
+                      <div class="timeline__item timeline__item--reserva">
+                        <div class="timeline__left">
+                          <span class="timeline__hora timeline__hora--reserva">Reserva</span>
+                        </div>
+                        <div class="timeline__track">
+                          <div class="timeline__dot timeline__dot--reserva">R{{ reserva.posicion_reserva }}</div>
+                          @if (!lastR) {
+                            <div class="timeline__line timeline__line--dashed"></div>
+                          }
+                        </div>
+                        <div class="timeline__card timeline__card--reserva">
+                          <div class="timeline__card-header">
+                            <div class="timeline__card-title">
+                              <h4 class="timeline__client-name">{{ getClienteName(reserva.cliente_id) }}</h4>
+                              <span class="timeline__servicio-badge">{{ getTipoLabel(reserva.tipo_servicio) }}</span>
+                            </div>
+                            <div class="timeline__badges">
+                              <span class="badge badge--{{ getConfirmacionClass(reserva.confirmacion) }}">{{ getConfirmacionLabel(reserva.confirmacion) }}</span>
+                            </div>
+                          </div>
+                          <div class="timeline__card-body">
+                            <div class="timeline__card-info">
+                              <span class="timeline__card-dir">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {{ getClienteDireccion(reserva.cliente_id) }}
+                              </span>
+                              <span class="timeline__card-tel">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+                                {{ getClienteTelefono(reserva.cliente_id) }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <p>Este técnico no tiene turnos asignados</p>
+              </div>
+            }
+          </div>
+        } @else {
+        <header class="main-content__header">
+          <h1>Tecnicos</h1>
+          <p>{{ tecnicosZona().length }} tecnicos asignados a {{ zonaNombre() }}</p>
+        </header>
+
+        <div class="clientes-toolbar">
+          <div class="clientes-search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar tecnico..." [value]="busquedaTecnico()" (input)="busquedaTecnico.set($any($event.target).value)" class="clientes-search__input" />
+          </div>
+        </div>
+
+          <div class="tecnicos-grid">
+            @for (tec of tecnicosZona(); track tec.id) {
+              <div class="tecnico-profile-card" [class.tecnico-profile-card--selected]="tecnicoSeleccionado() === tec.id" (click)="toggleTecnicoSeleccionado(tec.id!)">
+                <div class="tecnico-profile-card__avatar">
+                  @if (tec.foto) {
+                    <img [src]="tec.foto" [alt]="tec.first_name + ' ' + tec.last_name" />
+                  } @else {
+                    <span>{{ tec.first_name[0] }}{{ tec.last_name[0] }}</span>
+                  }
+                </div>
+                <div class="tecnico-profile-card__info">
+                  <span class="tecnico-profile-card__name">{{ tec.first_name }} {{ tec.last_name }}</span>
+                  <span class="tecnico-profile-card__especialidad">{{ tec.especialidad | titlecase }}</span>
+                </div>
+                <div class="tecnico-profile-card__details">
+                  <div class="tecnico-profile-card__detail">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.6a16 16 0 0 0 6.29 6.26l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span>{{ tec.telefono || '—' }}</span>
+                  </div>
+                  <div class="tecnico-profile-card__detail">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    <span>{{ tec.vehiculo || '—' }}</span>
+                  </div>
+                  <div class="tecnico-profile-card__detail">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <span>Max {{ tec.max_tareas_dia }} tareas/dia</span>
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <div class="clientes-table__empty">No hay tecnicos asignados a esta zona</div>
+            }
+          </div>
+        }
+      }
+      @case ('itinerario') {
+        <header class="main-content__header">
+          <h1>Itinerario</h1>
+          <p>Rutas de hoy en {{ zonaNombre() }} · {{ itinerariosZona().length }} tecnicos activos</p>
+        </header>
+
+        <div class="itinerario-columns">
+          @for (it of itinerariosZona(); track it.tecnico.id) {
+            <div class="itinerario-column">
+              <!-- Cabecera técnico -->
+              <div class="itinerario-column__header">
+                @if (it.tecnico.foto) {
+                  <img class="itinerario-column__avatar" [src]="it.tecnico.foto" [alt]="it.tecnico.first_name" />
+                } @else {
+                  <div class="itinerario-column__avatar itinerario-column__avatar--initials">{{ it.tecnico.first_name[0] }}{{ it.tecnico.last_name[0] }}</div>
+                }
+                <div class="itinerario-column__tecnico-info">
+                  <span class="itinerario-column__name">{{ it.tecnico.first_name }} {{ it.tecnico.last_name }}</span>
+                  <span class="itinerario-column__vehiculo">{{ it.tecnico.vehiculo }}</span>
+                </div>
+                <div class="itinerario-column__progress-pill">
+                  {{ it.tareas_completadas }}/{{ it.tareas_total }}
+                </div>
+              </div>
+
+              <!-- Barra progreso -->
+              <div class="itinerario-column__bar">
+                <div class="itinerario-column__bar-fill" [style.width.%]="it.progreso"></div>
+              </div>
+
+              <!-- Lista de paradas -->
+              <div class="itinerario-column__stops">
+                @for (p of it.paradas; track p.id) {
+                  <div class="itinerario-stop" [class.itinerario-stop--done]="p.estado === 'realizado'" [class.itinerario-stop--active]="p.estado === 'en_servicio'" [class.itinerario-stop--incident]="p.estado === 'incidencia'">
+                    <div class="itinerario-stop__order">{{ p.orden }}</div>
+                    <div class="itinerario-stop__body">
+                      <div class="itinerario-stop__client">{{ p.cliente?.nombre || 'Cliente #' + p.cliente_id }}</div>
+                      <div class="itinerario-stop__meta">
+                        <span>{{ p.hora_estimada_llegada || '--:--' }}</span>
+                        <span>·</span>
+                        <span>{{ p.tipo_servicio | titlecase }}</span>
+                      </div>
+                      @if (p.cliente?.direccion) {
+                        <div class="itinerario-stop__address">{{ p.cliente?.direccion }}</div>
+                      }
+                    </div>
+                    <span [class]="getEstadoBadgeClass(p.estado)">{{ getEstadoLabel(p.estado) }}</span>
+                  </div>
+                } @empty {
+                  <div class="itinerario-stop itinerario-stop--empty">Sin tareas asignadas hoy</div>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="placeholder-view" style="width:100%">
+              <p>No hay tecnicos con itinerario para hoy en {{ zonaNombre() }}</p>
+            </div>
+          }
+        </div>
+      }
+    }
+  </main>
+</div>
+}

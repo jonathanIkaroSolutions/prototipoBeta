@@ -1,0 +1,322 @@
+﻿<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <img src="alonso.png" alt="Alonso Luz y Gas" class="sidebar__logo-img" />
+    </div>
+    <nav class="sidebar__nav">
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+        </svg>
+        Dashboard
+      </a>
+      <a routerLink="/admin/clientes" routerLinkActive="active" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        Clientes
+      </a>
+      <a routerLink="/admin/citas" routerLinkActive="active" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        Citas
+      </a>
+      <a routerLink="/admin/turnos" routerLinkActive="active" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10" />
+          <polyline points="1 20 1 14 7 14" />
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+        </svg>
+        Técnicos
+      </a>
+      <a routerLink="/admin/itinerario" routerLinkActive="active" class="sidebar__link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+          <line x1="8" y1="2" x2="8" y2="18" />
+          <line x1="16" y1="6" x2="16" y2="22" />
+        </svg>
+        Itinerario
+      </a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <span class="sidebar__user-name">{{ authService.user()?.first_name }} {{ authService.user()?.last_name }}</span>
+        <span class="sidebar__user-role">{{ authService.user()?.rol | titlecase }}</span>
+      </div>
+      <button class="sidebar__logout" (click)="logout()">Cerrar sesion</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- LAYOUT 2x2: calendario+reservas arriba | técnicos+incidencias abajo -->
+    <div class="citas-layout">
+
+      <!-- ═══ ZONA SUPERIOR: CALENDARIO + RESERVAS ═══ -->
+      <div class="citas-top">
+
+        <!-- CALENDARIO (elemento principal) -->
+        <section class="cal-panel">
+          <div class="cal-header">
+            <button class="cal-header__arrow" (click)="prevMes()">&#8592;</button>
+            <span class="cal-header__label">{{ mesLabel() }}</span>
+            <button class="cal-header__arrow" (click)="nextMes()">&#8594;</button>
+          </div>
+
+          <div class="cal-weekdays">
+            <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+          </div>
+
+          <div class="cal-grid">
+            @for (dia of diasDelMes(); track dia.fecha) {
+            <button class="cal-day" [class.cal-day--otro-mes]="!dia.esMesActual" [class.cal-day--hoy]="dia.esHoy"
+              [class.cal-day--seleccionado]="esDiaSeleccionado(dia.fecha)"
+              [class.cal-day--con-datos]="dia.totalCitas > 0" (click)="seleccionarDia(dia.fecha)">
+              <span class="cal-day__num">{{ dia.dia }}</span>
+              @if (dia.totalCitas > 0) {
+              <div class="cal-day__dots">
+                @for (t of dia.turnos; track t.tecnicoId) {
+                <span class="cal-dot" [style.background]="getColorTecnico(t.tecnicoId)"
+                  [class.cal-dot--fallo]="t.hayFallo"></span>
+                }
+              </div>
+              <span class="cal-day__count">{{ dia.totalCitas }}</span>
+              }
+              @if (dia.hayReservas) {
+              <span class="cal-day__reserva-dot"></span>
+              }
+            </button>
+            }
+          </div>
+
+          <!-- Info dia seleccionado -->
+          <div class="cal-selected-info">
+            <span class="cal-selected-info__fecha">{{ formatFechaVista() }}</span>
+            @if (alertasTurnos().length > 0) {
+            <span class="cal-selected-info__alerta">&#9888; {{ alertasTurnos().length }} fallo{{ alertasTurnos().length
+              > 1 ? 's' : '' }}</span>
+            }
+          </div>
+        </section>
+
+        <!-- CLIENTES EN RESERVA (arriba derecha, misma altura que calendario) -->
+        <section class="reservas-panel">
+          <div class="reservas-panel__header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="20" y1="11" x2="20" y2="17" />
+              <line x1="17" y1="14" x2="23" y2="14" />
+            </svg>
+            <h3>Clientes en reserva</h3>
+            <span class="reservas-panel__badge">{{ totalReservasSemana() }}</span>
+          </div>
+
+          <div class="reservas-panel__semana-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            <span>{{ semanaLabel() }}</span>
+          </div>
+
+          <div class="reservas-panel__week">
+            @for (dia of reservasDeLaSemana(); track dia.fecha) {
+            <div class="reservas-panel__dia" [class.reservas-panel__dia--activo]="dia.esDiaSeleccionado"
+              [class.reservas-panel__dia--hoy]="dia.esHoy"
+              [class.reservas-panel__dia--con-reservas]="dia.reservas.length > 0">
+
+              <div class="reservas-panel__dia-header" (click)="seleccionarDia(dia.fecha)">
+                <span class="reservas-panel__dia-label">{{ dia.diaLabel }}</span>
+                @if (dia.reservas.length > 0) {
+                <span class="reservas-panel__dia-count">{{ dia.reservas.length }}</span>
+                }
+              </div>
+
+              @if (dia.reservas.length > 0 && dia.esDiaSeleccionado) {
+              <div class="reservas-panel__dia-list">
+                @for (r of dia.reservas; track r.cliente.id) {
+                <div class="reservas-panel__item" [class.reservas-panel__item--destacada]="r.hayFallos">
+                  <span class="reservas-panel__dot" [style.background]="getColorTecnico(r.tecnicoId)"></span>
+                  <div class="reservas-panel__item-info">
+                    <span class="reservas-panel__cliente">{{ r.cliente.clienteNombre }}</span>
+                    @if (r.cliente.clienteTelefono) {
+                    <a href="tel:{{ r.cliente.clienteTelefono }}" class="reservas-panel__tel">{{
+                      r.cliente.clienteTelefono }}</a>
+                    }
+                    <span class="reservas-panel__meta">{{ r.tecnicoNombre }}</span>
+                  </div>
+                  @if (r.hayFallos) {
+                  <button class="btn-promover btn-promover--sm" (click)="promoverReserva(r.turnoId, r.cliente.id)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2.5">
+                      <polyline points="17 11 12 6 7 11" />
+                      <line x1="12" y1="6" x2="12" y2="18" />
+                    </svg>
+                    Promover
+                  </button>
+                  }
+                </div>
+                }
+              </div>
+              }
+
+            </div>
+            }
+          </div>
+
+          @if (totalReservasSemana() === 0) {
+          <div class="reservas-panel__empty">
+            <p>Sin reservas esta semana</p>
+          </div>
+          }
+        </section>
+
+      </div>
+
+      <!-- ═══ ZONA INFERIOR: TÉCNICOS + INCIDENCIAS ═══ -->
+      <div class="citas-bottom">
+
+        <!-- TÉCNICOS DEL DÍA (izquierda, mismo ancho que calendario) -->
+        <section class="tecnicos-section">
+          <div class="tecnicos-section__header">
+            <h3>Técnicos &mdash; {{ formatFechaVista() }}</h3>
+          </div>
+
+          @if (turnosDelDia().length === 0) {
+          <div class="detalle-vacio">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            <p>Sin turnos para este día</p>
+            <span>Selecciona otro día en el calendario</span>
+          </div>
+          }
+
+          <div class="tecnicos-grid">
+            @for (tc of turnosDelDia(); track tc.turno.id) {
+            <div class="tec-block" [class.tec-block--alerta]="tc.puedePromover">
+
+              <!-- Cabecera del técnico -->
+              <div class="tec-block__header" [style.border-left-color]="getColorTecnico(tc.tecnicoId)"
+                (click)="toggleTecnico(tc.turno.id!)">
+                <img [src]="getTecnicoImg(tc.tecnicoId)" [alt]="tc.tecnicoNombre" class="tec-block__avatar" />
+                <div class="tec-block__meta">
+                  <strong>{{ tc.tecnicoNombre }}</strong>
+                  <span>{{ tc.titulares.length }} cita{{ tc.titulares.length !== 1 ? 's' : '' }}
+                    @if (tc.reservas.length > 0) { · <span class="reservas-label">{{ tc.reservas.length }} reserva{{
+                      tc.reservas.length !== 1 ? 's' : '' }}</span> }
+                  </span>
+                </div>
+                @if (tc.puedePromover) {
+                <span class="alerta-mini">&#9888; Fallo</span>
+                }
+                <span class="tec-block__chevron"
+                  [class.tec-block__chevron--open]="tecnicoExpandido() === tc.turno.id">&#9654;</span>
+              </div>
+
+              <!-- Citas del técnico (expandible) -->
+              @if (tecnicoExpandido() === tc.turno.id) {
+              <div class="citas-lista">
+                @for (cita of tc.titulares; track cita.id) {
+                <div class="cita-item" [class.cita-item--cancelada]="cita.confirmacion === 'rechazado'"
+                  [class.cita-item--confirmada]="cita.confirmacion === 'confirmado'">
+                  <span class="cita-item__hora">{{ cita.hora }}</span>
+                  <div class="cita-item__info">
+                    <span class="cita-item__nombre" [class.tachado]="cita.confirmacion === 'rechazado'">{{
+                      cita.clienteNombre }}</span>
+                    @if (cita.clienteTelefono) {
+                    <a href="tel:{{ cita.clienteTelefono }}" class="cita-item__tel">{{ cita.clienteTelefono }}</a>
+                    }
+                  </div>
+                  <span class="cita-item__estado estado--{{ cita.confirmacion }}">{{
+                    getConfirmacionLabel(cita.confirmacion) }}</span>
+                  @if (cita.confirmacion !== 'rechazado' && cita.confirmacion !== 'confirmado') {
+                  <button class="btn-fallo" (click)="marcarFallo(cita.turnoId, cita.id)">Marcar fallo</button>
+                  }
+                </div>
+                }
+              </div>
+              }
+
+            </div>
+            }
+          </div>
+        </section>
+
+        <!-- PANEL DE INCIDENCIAS (derecha, mismo ancho que reservas) -->
+        <section class="incidencias-panel">
+          <div class="incidencias-panel__header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <h3>Incidencias</h3>
+            <span class="incidencias-panel__badge">{{ incidenciasDelDia().length }}</span>
+          </div>
+
+          <div class="incidencias-panel__subtitle">
+            <span>{{ formatFechaVista() }}</span>
+          </div>
+
+          @if (incidenciasDelDia().length > 0) {
+          <div class="incidencias-panel__list">
+            @for (inc of incidenciasDelDia(); track inc.tarea.id) {
+            <div class="incidencias-panel__item">
+              <span class="incidencias-panel__dot" [style.background]="getColorTecnico(inc.tecnicoId)"></span>
+              <div class="incidencias-panel__item-info">
+                <span class="incidencias-panel__cliente">{{ inc.tarea.clienteNombre }}</span>
+                <span class="incidencias-panel__meta">{{ inc.tarea.hora }} · {{ inc.tecnicoNombre }}</span>
+                @if (inc.tarea.clienteTelefono) {
+                <a href="tel:{{ inc.tarea.clienteTelefono }}" class="incidencias-panel__tel">{{
+                  inc.tarea.clienteTelefono }}</a>
+                }
+              </div>
+              <span class="incidencias-panel__estado">Cancelado</span>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="incidencias-panel__empty">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <p>Sin incidencias hoy</p>
+            <span>Todo en orden para este día</span>
+          </div>
+          }
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+</div>

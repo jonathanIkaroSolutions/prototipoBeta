@@ -1,0 +1,914 @@
+// Citas panel - calendario mensual + detalle por dia
+
+.admin-layout {
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--color-gray-900);
+  color: var(--color-text-inverse);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  z-index: 100;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-gray-700);
+    margin-bottom: var(--space-6);
+  }
+
+  &__logo-img {
+    max-height: 40px;
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    color: var(--color-gray-300);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+
+    &:hover {
+      background: var(--color-gray-800);
+      color: white;
+    }
+
+    &.active {
+      background: var(--color-primary);
+      color: white;
+    }
+  }
+
+  &__footer {
+    border-top: 1px solid var(--color-gray-700);
+    padding-top: var(--space-4);
+  }
+
+  &__user {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-3);
+  }
+
+  &__user-name {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+  }
+
+  &__user-role {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
+  }
+
+  &__logout {
+    background: transparent;
+    border: none;
+    color: var(--color-gray-400);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-red-500);
+    }
+  }
+}
+
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: var(--space-6);
+  background: var(--color-surface);
+  min-height: 100vh;
+}
+
+// ══════ LAYOUT 2x2: Cal+Reservas arriba | Técnicos+Incidencias abajo ═══════
+.citas-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.citas-top {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: stretch; // misma altura
+}
+
+.citas-bottom {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+// ═══ CALENDARIO (elemento principal, grande) ═══
+.cal-panel {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  &__arrow {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: #e3f2fd;
+    }
+  }
+
+  &__label {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+
+  span {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    padding: 6px 0;
+    text-transform: capitalize;
+  }
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 4px 8px;
+  min-height: 64px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+
+  &--otro-mes {
+    opacity: 0.25;
+  }
+
+  &--hoy {
+    .cal-day__num {
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+  }
+
+  &--seleccionado {
+    border-color: var(--color-primary);
+    background: #e3f2fd;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &--con-datos {
+    font-weight: 500;
+  }
+
+  &__num {
+    font-size: 0.875rem;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  &__dots {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 36px;
+  }
+
+  &__count {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  &__reserva-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+}
+
+.cal-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &--fallo {
+    outline: 2px solid #ef4444;
+    outline-offset: 1px;
+  }
+}
+
+.cal-selected-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-light);
+
+  &__fecha {
+    font-size: 0.938rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: var(--color-text-primary);
+  }
+
+  &__alerta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #c07520;
+    background: #fff8f0;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    border: 1px solid #ffe0b2;
+  }
+}
+
+// ═══ PANEL DE RESERVAS (arriba derecha, misma altura que calendario) ═══
+.reservas-panel {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    background: #f0fdf4;
+    border-bottom: 1px solid #dcfce7;
+
+    h3 {
+      flex: 1;
+      font-size: 0.938rem;
+      font-weight: 700;
+      margin: 0;
+      color: #15803d;
+    }
+
+    svg {
+      color: #16a34a;
+      flex-shrink: 0;
+    }
+  }
+
+  &__badge {
+    background: #16a34a;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  &__semana-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: #fafbfc;
+    border-bottom: 1px solid var(--color-border-light);
+
+    svg { flex-shrink: 0; opacity: 0.6; }
+  }
+
+  &__week {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  // Cada día de la semana
+  &__dia {
+    border-bottom: 1px solid var(--color-border-light);
+
+    &:last-child { border-bottom: none; }
+
+    &--activo {
+      background: #f0fdf4;
+    }
+
+    &--hoy > .reservas-panel__dia-header {
+      .reservas-panel__dia-label {
+        color: var(--color-primary);
+        font-weight: 700;
+      }
+    }
+
+    &--con-reservas > .reservas-panel__dia-header {
+      cursor: pointer;
+      &:hover { background: #f3f4f6; }
+    }
+  }
+
+  &__dia-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    user-select: none;
+  }
+
+  &__dia-label {
+    font-size: 0.813rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-transform: capitalize;
+  }
+
+  &__dia-count {
+    font-size: 0.688rem;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #15803d;
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
+
+  &__dia-list {
+    padding: 0 16px 12px;
+  }
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: white;
+    border: 1px solid var(--color-border-light);
+
+    &:last-child { margin-bottom: 0; }
+
+    &--destacada {
+      border-color: #86efac;
+      background: rgba(34, 197, 94, 0.04);
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.08);
+    }
+  }
+
+  &__item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &__cliente {
+    font-size: 0.813rem;
+    font-weight: 600;
+  }
+
+  &__tel {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__meta {
+    font-size: 0.688rem;
+    color: var(--color-text-muted);
+  }
+
+  &__empty {
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--color-text-muted);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// ═══ SECCIÓN TÉCNICOS (abajo izquierda) ═══
+.tecnicos-section {
+  background: white;
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  &__header {
+    margin-bottom: 20px;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      text-transform: capitalize;
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+.tecnicos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ═══ PANEL DE INCIDENCIAS (abajo derecha) ═══
+.incidencias-panel {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    background: #fef2f2;
+    border-bottom: 1px solid #fecaca;
+
+    h3 {
+      flex: 1;
+      font-size: 0.938rem;
+      font-weight: 700;
+      margin: 0;
+      color: #b91c1c;
+    }
+
+    svg {
+      color: #ef4444;
+      flex-shrink: 0;
+    }
+  }
+
+  &__badge {
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  &__subtitle {
+    padding: 10px 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: capitalize;
+    background: #fafbfc;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  &__list {
+    padding: 16px 20px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    background: white;
+    border: 1px solid #fecaca;
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  &__item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &__cliente {
+    font-size: 0.813rem;
+    font-weight: 600;
+  }
+
+  &__meta {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  &__tel {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__estado {
+    font-size: 0.688rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 40px 20px;
+    color: var(--color-text-muted);
+
+    svg { opacity: 0.4; color: #16a34a; }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.detalle-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 0;
+  color: var(--color-text-muted);
+
+  svg {
+    opacity: 0.4;
+  }
+
+  p {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  span {
+    font-size: 0.875rem;
+  }
+}
+
+.tec-block {
+  background: white;
+  border: 1.5px solid var(--color-border-light);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+
+  &--alerta {
+    border-color: #ffe0b2;
+    box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border-light);
+    background: #fafbfc;
+    border-left: 4px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+  }
+
+  &__chevron {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    transition: transform 0.2s ease;
+    margin-left: auto;
+    &--open { transform: rotate(90deg); }
+  }
+
+  &__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__meta {
+    flex: 1;
+
+    strong {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+.reservas-label {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.alerta-mini {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c07520;
+  background: #fff8f0;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.citas-lista {
+  padding: 8px 0;
+}
+
+.cita-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #fafbfc;
+  }
+
+  &--cancelada {
+    background: rgba(239, 68, 68, 0.04);
+  }
+
+  &--confirmada {
+    background: rgba(34, 197, 94, 0.03);
+  }
+
+  &__hora {
+    font-family: monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    width: 50px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__nombre {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  &__tel {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__estado {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    white-space: nowrap;
+  }
+}
+
+.tachado {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.estado--sin_avisar {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.estado--avisado {
+  background: #e3f2fd;
+  color: #456d96;
+}
+
+.estado--confirmado {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.estado--no_contesta {
+  background: #fff8f0;
+  color: #c07520;
+}
+
+.estado--rechazado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.estado--promovido {
+  background: #bbdefb;
+  color: #33567e;
+}
+
+.btn-fallo {
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: transparent;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #b91c1c;
+  }
+}
+
+// Reserva items (legacy, kept for compatibility)
+.reserva-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__nombre {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  &--destacada .reserva-item__nombre {
+    color: #16a34a;
+  }
+}
+
+.btn-promover {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.813rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+  }
+
+  &--sm {
+    padding: 5px 10px;
+    font-size: 0.688rem;
+    border-radius: 6px;
+    gap: 4px;
+  }
+
+  svg { flex-shrink: 0; }
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

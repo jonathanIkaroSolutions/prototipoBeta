@@ -1,0 +1,423 @@
+<!-- ═══════════════════════════════════════════════════════════
+     HEADER - Minimal, fixed, glassmorphism (Nestra style)
+     ═══════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header__inner">
+    <a href="/" class="header__logo">
+      <img src="alonso.png" alt="Alonso Luz y Gas" class="header__logo-img" />
+    </a>
+    <nav class="header__nav">
+      <a href="#servicios" class="header__link">Servicios</a>
+      <a href="#nosotros" class="header__link">Nosotros</a>
+      <a href="#oficinas" class="header__link">Oficinas</a>
+      <a href="#contacto" class="header__link">Contacto</a>
+    </nav>
+    <div class="header__actions">
+      <a href="tel:+34976978317" class="header__phone">976 978 317</a>
+      <a routerLink="/login" class="header__btn">Área privada</a>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO - Full viewport, bold headline, gradient (Nestra style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="hero" #heroSection>
+  <div class="hero__bg-gradient"></div>
+  <div class="hero__content">
+    <span class="hero__tag">INSTALACIONES · LUZ · GAS · AGUA · MANTENIMIENTOS</span>
+    <h1 class="hero__title">
+      Cuidamos tu energía,<br/>
+      <span class="hero__title-accent">y la de tu hogar</span>
+    </h1>
+    <p class="hero__subtitle">
+      Más de 25.000 hogares y empresas españolas ahorran energía y dinero con nuestros servicios. 
+      Más de 40 años de trayectoria en el norte de España.
+    </p>
+    <div class="hero__actions">
+      <a href="#servicios" class="hero__btn hero__btn--primary">Descubrir servicios</a>
+      <a href="tel:+34663302000" class="hero__btn hero__btn--ghost">
+        <span class="hero__btn-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </span> 663 302 000
+      </a>
+    </div>
+    <div class="hero__badge">
+      SIN COMPROMISO · PRESUPUESTO GRATUITO · ATENCIÓN INMEDIATA
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MARQUEE - Scrolling trust bar (Nestra partners style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="marquee">
+  <p class="marquee__label">HOGARES Y EMPRESAS QUE CONFÍAN EN NOSOTROS</p>
+  <div class="marquee__wrapper">
+    <div class="marquee__track">
+      <span class="marquee__item">Zaragoza</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Sariñena</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Monzón</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Pamplona</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">+25.000 clientes</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">+40 años experiencia</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Instaladores certificados</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Zaragoza</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Sariñena</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Monzón</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Pamplona</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">+25.000 clientes</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">+40 años experiencia</span>
+      <span class="marquee__dot">·</span>
+      <span class="marquee__item">Instaladores certificados</span>
+      <span class="marquee__dot">·</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SERVICES - Grid cards with hover (Nestra "Dos momentos" style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="services" id="servicios">
+  <div class="services__inner">
+    <div class="services__header animate-section">
+      <span class="services__label">NUESTROS SERVICIOS</span>
+      <h2 class="services__title">Todo lo que tu hogar necesita,<br/>en un solo proveedor.</h2>
+      <p class="services__desc">
+        Nos especializamos en instalaciones eléctricas y de gas, mantenimientos, tratamiento de agua y mucho más.
+      </p>
+    </div>
+
+    <div class="services__grid">
+      <!-- LUZ -->
+      <div class="service-card">
+        <div class="service-card__image">
+          <img src="assets/images/servicio-luz.svg" alt="Servicio de luz y electricidad" />
+          <div class="service-card__image-overlay"></div>
+        </div>
+        <div class="service-card__body">
+          <div class="service-card__number">01</div>
+          <div class="service-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3 class="service-card__title">Energía Eléctrica</h3>
+          <p class="service-card__desc">
+            Conoce nuestra línea de productos y servicios que te permitirán ahorrar dinero. 
+            Instalaciones eléctricas, energía solar fotovoltaica y aerotermia.
+          </p>
+          <span class="service-card__link">
+            Más información
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- GAS -->
+      <div class="service-card">
+        <div class="service-card__image">
+          <img src="assets/images/servicio-gas.svg" alt="Servicio de gas natural" />
+          <div class="service-card__image-overlay"></div>
+        </div>
+        <div class="service-card__body">
+          <div class="service-card__number">02</div>
+          <div class="service-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg>
+          </div>
+          <h3 class="service-card__title">Gas Natural</h3>
+          <p class="service-card__desc">
+            Confía en la experiencia de la empresa número UNO en España en cantidad de 
+            instalaciones de Gas. Calderas, calentadores y tanques.
+          </p>
+          <span class="service-card__link">
+            Más información
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- AGUA -->
+      <div class="service-card">
+        <div class="service-card__image">
+          <img src="assets/images/servicio-agua.svg" alt="Tratamiento de agua" />
+          <div class="service-card__image-overlay"></div>
+        </div>
+        <div class="service-card__body">
+          <div class="service-card__number">03</div>
+          <div class="service-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
+          <h3 class="service-card__title">Tratamiento de Agua</h3>
+          <p class="service-card__desc">
+            Descubre nuestras soluciones de purificación y tratamiento de agua 
+            diseñadas para ahorrar. Ósmosis inversa y descalcificación.
+          </p>
+          <span class="service-card__link">
+            Más información
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- MANTENIMIENTO -->
+      <div class="service-card">
+        <div class="service-card__image">
+          <img src="assets/images/servicio-mantenimiento.svg" alt="Mantenimientos" />
+          <div class="service-card__image-overlay"></div>
+        </div>
+        <div class="service-card__body">
+          <div class="service-card__number">04</div>
+          <div class="service-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3 class="service-card__title">Mantenimientos</h3>
+          <p class="service-card__desc">
+            Evita averías que puedan aumentar tu consumo. Nos especializamos en 
+            revisiones y reparaciones de calderas y sistemas.
+          </p>
+          <span class="service-card__link">
+            Más información
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATS - Full width numbers section (Nestra metrics style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="stats" id="nosotros">
+  <div class="stats__inner animate-section">
+    <div class="stats__header">
+      <span class="stats__label">ALONSO LUZ Y GAS</span>
+      <h2 class="stats__title">Más de 40 años cuidando la energía de tu hogar.</h2>
+      <p class="stats__desc">
+        Empresa número UNO en España en cantidad de instalaciones de gas. 
+        Confía en la experiencia y profesionalidad de nuestro equipo.
+      </p>
+    </div>
+    <div class="stats__grid">
+      <div class="stat">
+        <span class="stat__number" data-value="40">40</span>
+        <span class="stat__suffix">+</span>
+        <span class="stat__label">Años de experiencia</span>
+      </div>
+      <div class="stat">
+        <span class="stat__number" data-value="25000">25.000</span>
+        <span class="stat__suffix">+</span>
+        <span class="stat__label">Hogares y empresas</span>
+      </div>
+      <div class="stat">
+        <span class="stat__number" data-value="4">4</span>
+        <span class="stat__suffix"></span>
+        <span class="stat__label">Oficinas en España</span>
+      </div>
+      <div class="stat">
+        <span class="stat__number" data-value="100">100</span>
+        <span class="stat__suffix">%</span>
+        <span class="stat__label">Técnicos certificados</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DETAILED SERVICES - Two column layout (Nestra product style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="detailed">
+  <div class="detailed__inner">
+    <!-- Electricidad -->
+    <div class="detailed__block animate-section">
+      <div class="detailed__text">
+        <span class="detailed__tag">ENERGÍA ELÉCTRICA</span>
+        <h3 class="detailed__title">Instalaciones eléctricas profesionales para hogares y empresas.</h3>
+        <ul class="detailed__list">
+          <li>Instalaciones eléctricas completas</li>
+          <li>Estudios energéticos personalizados</li>
+          <li>Energía solar fotovoltaica</li>
+          <li>Aerotermia de última generación</li>
+          <li>Aire acondicionado</li>
+          <li>Puntos de recarga para vehículos eléctricos</li>
+        </ul>
+      </div>
+      <div class="detailed__visual">
+        <div class="detailed__card">
+          <div class="detailed__card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="detailed__card-stat">
+            <span class="detailed__card-number">-30%</span>
+            <span class="detailed__card-label">Ahorro medio en factura eléctrica</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gas -->
+    <div class="detailed__block detailed__block--reverse animate-section">
+      <div class="detailed__text">
+        <span class="detailed__tag">GAS NATURAL</span>
+        <h3 class="detailed__title">La empresa líder en instalaciones de gas en España.</h3>
+        <ul class="detailed__list">
+          <li>Instalaciones de fontanería y gas</li>
+          <li>Sustitución de calderas y calentadores</li>
+          <li>Instalación de gas en fincas y comunidades</li>
+          <li>Individualizaciones de calderas centrales</li>
+          <li>Tanques de gas para poblaciones y negocios</li>
+          <li>Tramitación de altas de gas</li>
+        </ul>
+      </div>
+      <div class="detailed__visual">
+        <div class="detailed__card detailed__card--gas">
+          <div class="detailed__card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z"/></svg>
+          </div>
+          <div class="detailed__card-stat">
+            <span class="detailed__card-number">Nº1</span>
+            <span class="detailed__card-label">En instalaciones de Gas en España</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     OFFICES - Cards grid (Nestra testimonials style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="offices" id="oficinas">
+  <div class="offices__inner animate-section">
+    <span class="offices__label">NUESTRAS OFICINAS</span>
+    <h2 class="offices__title">Cerca de ti, estés donde estés.</h2>
+
+    <div class="offices__grid">
+      <div class="office-card">
+        <div class="office-card__city">Zaragoza</div>
+        <p class="office-card__address">Camino de las Torres, 6<br/>50002 Zaragoza</p>
+        <a href="https://goo.gl/maps/bZVY5CRLddM1L8iN8" target="_blank" class="office-card__link">
+          Ver en mapa →
+        </a>
+      </div>
+      <div class="office-card">
+        <div class="office-card__city">Sariñena (Huesca)</div>
+        <p class="office-card__address">Av. de Fraga, 5<br/>22200 Sariñena, Huesca</p>
+        <a href="https://goo.gl/maps/KCiJU4h5oMLLNffW7" target="_blank" class="office-card__link">
+          Ver en mapa →
+        </a>
+      </div>
+      <div class="office-card">
+        <div class="office-card__city">Monzón (Huesca)</div>
+        <p class="office-card__address">Calle de Paúles, 10<br/>22400 Monzón, Huesca</p>
+        <a href="https://goo.gl/maps/YvB91AyGRi51pYtx6" target="_blank" class="office-card__link">
+          Ver en mapa →
+        </a>
+      </div>
+      <div class="office-card">
+        <div class="office-card__city">Pamplona</div>
+        <p class="office-card__address">Calle Ermitagaña, 25<br/>31008 Pamplona</p>
+        <a href="https://goo.gl/maps/R487PWZ9zBqhXKSw5" target="_blank" class="office-card__link">
+          Ver en mapa →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CTA - Final call to action (Nestra "Empieza hoy" style)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="cta" id="contacto">
+  <div class="cta__inner">
+    <span class="cta__label">CONTACTA CON NOSOTROS</span>
+    <h2 class="cta__title">¿Le damos a tu hogar la energía que merece?</h2>
+    <p class="cta__desc">
+      Pide presupuesto sin compromiso. Nuestros técnicos certificados te atenderán de forma inmediata.
+    </p>
+    <div class="cta__buttons">
+      <a href="tel:+34976978317" class="cta__btn cta__btn--primary">
+        Llamar al 976 978 317
+      </a>
+      <a href="tel:+34663302000" class="cta__btn cta__btn--secondary">
+        Urgencias: 663 302 000
+      </a>
+    </div>
+    <div class="cta__info">
+      <div class="cta__info-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <span>info&#64;alonsoluzgas.es</span>
+      </div>
+      <div class="cta__info-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Lun - Vie: 8:00 - 20:00</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER - Dark, minimal (Nestra style)
+     ═══════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <img src="logosfooter.png" alt="Alonso Luz y Gas" class="footer__logo" />
+        <p class="footer__tagline">
+          Más de 40 años de trayectoria en el norte de España. Nos especializamos en
+          instalaciones eléctricas y de gas, mantenimientos y sistemas de energía.
+        </p>
+      </div>
+      <div class="footer__links">
+        <div class="footer__col">
+          <h4>Servicios</h4>
+          <a href="#servicios">Energía eléctrica</a>
+          <a href="#servicios">Gas Natural</a>
+          <a href="#servicios">Tratamiento de agua</a>
+          <a href="#servicios">Mantenimientos</a>
+        </div>
+        <div class="footer__col">
+          <h4>Empresa</h4>
+          <a href="#nosotros">Nosotros</a>
+          <a href="#oficinas">Oficinas</a>
+          <a href="#contacto">Contacto</a>
+          <a routerLink="/login">Área privada</a>
+        </div>
+        <div class="footer__col">
+          <h4>Legal</h4>
+          <a href="#">Aviso Legal</a>
+          <a href="#">Política de Privacidad</a>
+          <a href="#">Política de Cookies</a>
+          <a href="#">Canal de denuncias</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© 2026 Electricidad Alonso S.L. Todos los derechos reservados.</p>
+      <div class="footer__social">
+        <a href="https://www.facebook.com/alonsoluzgas" target="_blank" aria-label="Facebook">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="https://twitter.com/" target="_blank" aria-label="Twitter">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/" target="_blank" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+

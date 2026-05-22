@@ -1,0 +1,259 @@
+/* ============================================
+   VARIABLES PRIMITIVAS (Design Tokens Base)
+   ============================================ */
+:root {
+  /* Colores primitivos - Marca Alonso */
+  --color-red-primary-50: #fef2f2;
+  --color-red-primary-100: #fde3e3;
+  --color-red-primary-200: #f9b4b4;
+  --color-red-primary-500: #d42b2b;
+  --color-red-primary-600: #b91c1c;
+  --color-red-primary-700: #991b1b;
+  --color-red-primary-800: #7f1d1d;
+
+  --color-blue-50: #e3f2fd;
+  --color-blue-100: #bbdefb;
+  --color-blue-200: #90caf9;
+  --color-blue-500: #7b9fc7;
+  --color-blue-600: #5a84b0;
+  --color-blue-700: #456d96;
+  --color-blue-800: #33567e;
+  
+  --color-orange-50: #fff8f0;
+  --color-orange-100: #ffe8cc;
+  --color-orange-400: #e8a050;
+  --color-orange-500: #d98c3a;
+  --color-orange-600: #c07520;
+  
+  --color-purple-50: #f5f0fa;
+  --color-purple-100: #e8ddf5;
+  --color-purple-500: #9b85c0;
+  --color-purple-600: #7a65a0;
+
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-500: #e05555;
+  --color-red-600: #c03030;
+  --color-red-700: #991b1b;
+
+  --color-gray-50: #fafbfc;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  --color-white: #ffffff;
+  --color-black: #000000;
+  
+  --color-yellow-500: #f59e0b;
+  
+  /* Espaciado primitivo */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  
+  /* Tipografía primitiva */
+  --font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-heading: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-size-5xl: 3rem;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Bordes primitivos */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* Sombras primitivas */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+  
+  /* Transiciones */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+
+  /* ============================================
+     VARIABLES SEMÁNTICAS (Uso contextual)
+     ============================================ */
+  
+  /* Colores semánticos - Marca */
+  --color-primary: var(--color-red-primary-500);
+  --color-primary-hover: var(--color-red-primary-600);
+  --color-primary-dark: var(--color-red-primary-700);
+  --color-secondary: var(--color-orange-400);
+  --color-secondary-hover: var(--color-orange-600);
+  
+  /* Colores semánticos - UI */
+  --color-background: var(--color-white);
+  --color-surface: var(--color-gray-50);
+  --color-surface-elevated: var(--color-white);
+  --color-border: var(--color-gray-300);
+  --color-border-light: var(--color-gray-200);
+  
+  /* Colores semánticos - Texto */
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-500);
+  --color-text-inverse: var(--color-white);
+  
+  /* Colores semánticos - Estado */
+  --color-success: #22c55e;
+  --color-error: var(--color-red-500);
+  --color-warning: var(--color-yellow-500);
+  --color-info: var(--color-blue-200);
+  
+  /* Tipografía semántica */
+  --heading-font: var(--font-family-heading);
+  --body-font: var(--font-family-base);
+  
+  /* Layout semántico */
+  --header-height: 72px;
+  --sidebar-width: 260px;
+  --content-max-width: 1200px;
+  --container-padding: var(--space-6);
+}
+
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--body-font);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  
+  &:hover {
+    color: var(--color-primary-hover);
+  }
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  
+  &--primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    
+    &:hover {
+      background-color: var(--color-primary-hover);
+      color: var(--color-text-inverse);
+    }
+  }
+  
+  &--secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-text-inverse);
+    
+    &:hover {
+      background-color: var(--color-secondary-hover);
+      color: var(--color-text-inverse);
+    }
+  }
+  
+  &--outline {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    
+    &:hover {
+      background-color: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+  }
+  
+  &--lg {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-lg);
+  }
+}
+
+.card {
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-light);
+}

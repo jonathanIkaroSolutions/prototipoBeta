@@ -1,0 +1,17 @@
+﻿Fecha;Dia;Hora;Cliente;Telefono;Direccion;CP;Ciudad;Servicio;Tecnico
+2026-05-25;Lunes;09:00;Carlos Ruiz Herrero;612345001;Calle Alfonso I 12 3A;50001;Zaragoza;reparacion;Miguel Garcia Lopez
+2026-05-25;Lunes;09:00;Carlos Ruiz Herrero;612345001;Calle Alfonso I 12 3A;50001;Zaragoza;reparacion;Miguel Garcia Lopez
+2026-05-25;Lunes;10:30;Lucia Fernandez Moran;612345002;Paseo Independencia 22 2B;50003;Zaragoza;mantenimiento;Miguel Garcia Lopez
+2026-05-25;Lunes;12:00;Pedro Sanz Olivan;612345003;Calle General Mola 8 1C;50005;Zaragoza;revision;Andres Lopez Martin
+2026-05-26;Martes;09:00;Maria Blasco Abad;612345004;Avenida de Goya 45 3D;50006;Zaragoza;reparacion;Andres Lopez Martin
+2026-05-26;Martes;10:30;Jose Navarro Gil;612345005;Calle Delicias 33 bajo;50007;Zaragoza;mantenimiento;Pablo Serrano Gil
+2026-05-26;Martes;12:00;Ana Moreno Roca;612345006;Calle Predicadores 14 4A;50011;Zaragoza;montaje;Pablo Serrano Gil
+2026-05-27;Miercoles;09:00;Fernando Castro Vidal;612345007;Avenida Pablo Neruda 18 2C;50012;Zaragoza;reparacion;David Navarro Ruiz
+2026-05-27;Miercoles;10:30;Laura Serrano Pina;612345008;Calle Gomez Laguna 5 1B;50014;Zaragoza;revision;David Navarro Ruiz
+2026-05-27;Miercoles;12:00;Alberto Otal Gracia;612345009;Calle Las Fuentes 22 3A;50002;Zaragoza;mantenimiento;Javier Moreno Blasco
+2026-05-28;Jueves;09:00;Carmen Lopez Bernal;612345010;Calle Heroismo 7 2D;50008;Zaragoza;reparacion;Javier Moreno Blasco
+2026-05-28;Jueves;10:30;Raul Gimenez Fuertes;612345011;Avenida Cesar Augusta 30;50009;Zaragoza;revision;Andres Lopez Martin
+2026-05-29;Viernes;09:00;Pilar Aranda Cortez;612345012;Calle Casablanca 15 bajo B;50016;Zaragoza;reparacion;Miguel Garcia Lopez
+2026-05-30;Sabado;09:00;Diego Torres Milian;612345013;Avenida Ranillas 8 4C;50018;Zaragoza;mantenimiento;Pablo Serrano Gil
+2026-05-30;Sabado;10:30;Marta Ibanez Royo;612345014;Plaza del Pilar 3 2A;50001;Zaragoza;revision_gas;Miguel Garcia Lopez
+2026-05-31;Domingo;09:00;Sergio Palomino Cebrian;612345015;Calle Sagasta 28 5B;50005;Zaragoza;reparacion;Andres Lopez Martin

@@ -1,0 +1,280 @@
+<!-- VISTA MÓVIL DEL TÉCNICO -->
+<div class="tecnico-app">
+  <!-- HEADER FIJO -->
+  <header class="mobile-header">
+    <div class="mobile-header__left">
+      <div class="mobile-header__avatar">{{ tecnicoActual().first_name[0] }}{{ tecnicoActual().last_name[0] }}</div>
+      <div class="mobile-header__info">
+        <span class="mobile-header__name">{{ tecnicoActual().first_name }}</span>
+        <span class="mobile-header__date">Hoy · {{ turnoHoy()?.tipo_turno === 'manana' ? 'Mañana' : turnoHoy()?.tipo_turno === 'tarde' ? 'Tarde' : 'Jornada completa' }}</span>
+      </div>
+    </div>
+    <button class="mobile-header__logout" (click)="logout()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </header>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- VISTA JORNADA (lista de tareas del día) -->
+  <!-- ═══════════════════════════════════════ -->
+  @if (vista() === 'jornada') {
+    <div class="jornada">
+      <!-- BARRA DE PROGRESO -->
+      <div class="progress-bar">
+        <div class="progress-bar__track">
+          <div class="progress-bar__fill" [style.width.%]="progreso()"></div>
+        </div>
+        <div class="progress-bar__stats">
+          <span>{{ statsHoy().completadas }}/{{ statsHoy().total }} completadas</span>
+          <span class="progress-bar__pct">{{ progreso() }}%</span>
+        </div>
+      </div>
+
+      <!-- TAREA ACTIVA (destacada) -->
+      @if (tareaActiva(); as activa) {
+        <div class="tarea-activa" (click)="verDetalle(activa)">
+          <div class="tarea-activa__badge">
+            <span class="pulse-dot"></span>
+            EN CURSO
+          </div>
+          <div class="tarea-activa__cliente">{{ getClienteName(activa.cliente_id) }}</div>
+          <div class="tarea-activa__equipo">{{ getClienteEquipo(activa.cliente_id) }}</div>
+          <div class="tarea-activa__dir">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ getClienteDireccion(activa.cliente_id) }}
+          </div>
+          <div class="tarea-activa__meta">
+            <span>{{ getTipoLabel(activa.tipo_servicio) }}</span>
+            <span>~{{ activa.duracion_estimada }}min</span>
+            <span>Inicio: {{ activa.hora_inicio }}</span>
+          </div>
+          <div class="tarea-activa__actions">
+            <button class="btn-mobile btn-mobile--success" (click)="finalizarTrabajo(activa); $event.stopPropagation()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Finalizar
+            </button>
+            <button class="btn-mobile btn-mobile--danger" (click)="verDetalle(activa); $event.stopPropagation()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Incidencia
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- SIGUIENTE TAREA (si no hay activa) -->
+      @if (!tareaActiva() && siguienteTarea(); as siguiente) {
+        <div class="siguiente-tarea">
+          <div class="siguiente-tarea__label">Siguiente servicio</div>
+          <div class="siguiente-tarea__cliente">{{ getClienteName(siguiente.cliente_id) }}</div>
+          <div class="siguiente-tarea__dir">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ getClienteDireccion(siguiente.cliente_id) }}, {{ getClienteCiudad(siguiente.cliente_id) }}
+          </div>
+          <div class="siguiente-tarea__hora">Hora estimada: {{ siguiente.hora_estimada }}</div>
+          <div class="siguiente-tarea__actions">
+            <button class="btn-mobile btn-mobile--nav" (click)="abrirNavegacion(siguiente.cliente_id)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              Navegar
+            </button>
+            <button class="btn-mobile btn-mobile--primary" (click)="iniciarTrabajo(siguiente)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Iniciar trabajo
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- JORNADA COMPLETADA -->
+      @if (statsHoy().total > 0 && statsHoy().completadas === statsHoy().total - statsHoy().incidencias && statsHoy().pendientes === 0 && statsHoy().enCurso === 0) {
+        <div class="jornada-completada">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <h2>Jornada completada</h2>
+          <p>{{ statsHoy().completadas }} servicios realizados</p>
+          @if (statsHoy().incidencias > 0) {
+            <p class="jornada-completada__inc">{{ statsHoy().incidencias }} incidencia{{ statsHoy().incidencias > 1 ? 's' : '' }}</p>
+          }
+        </div>
+      }
+
+      <!-- LISTA DE TODAS LAS TAREAS -->
+      <div class="tareas-lista">
+        <h3 class="tareas-lista__title">Servicios del dia</h3>
+        @for (tarea of tareasHoy(); track tarea.id) {
+          <div class="tarea-card tarea-card--{{ getEstadoClass(tarea.estado) }}" (click)="verDetalle(tarea)">
+            <div class="tarea-card__orden">{{ tarea.orden }}</div>
+            <div class="tarea-card__body">
+              <div class="tarea-card__top">
+                <span class="tarea-card__nombre">{{ getClienteName(tarea.cliente_id) }}</span>
+                <span class="tarea-card__estado tarea-card__estado--{{ getEstadoClass(tarea.estado) }}">{{ getEstadoLabel(tarea.estado) }}</span>
+              </div>
+              <div class="tarea-card__details">
+                <span>{{ tarea.hora_estimada }}</span>
+                <span>{{ getTipoLabel(tarea.tipo_servicio) }}</span>
+                <span>~{{ tarea.duracion_estimada }}min</span>
+              </div>
+              @if (tarea.incidencia) {
+                <div class="tarea-card__incidencia">{{ tarea.incidencia }}</div>
+              }
+            </div>
+            <div class="tarea-card__arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        } @empty {
+          <div class="tareas-lista__empty">
+            <p>No tienes servicios asignados hoy</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- VISTA DETALLE TAREA                     -->
+  <!-- ═══════════════════════════════════════ -->
+  @if (vista() === 'detalle-tarea' && tareaSeleccionada(); as tarea) {
+    <div class="detalle-tarea">
+      <!-- BACK BUTTON -->
+      <button class="detalle-tarea__back" (click)="volverJornada()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+
+      <!-- ESTADO -->
+      <div class="detalle-tarea__estado detalle-tarea__estado--{{ getEstadoClass(tarea.estado) }}">
+        {{ getEstadoLabel(tarea.estado) }}
+        @if (tarea.hora_inicio) {
+          <span class="detalle-tarea__hora-inicio">desde {{ tarea.hora_inicio }}</span>
+        }
+      </div>
+
+      <!-- INFO CLIENTE -->
+      <div class="detalle-tarea__cliente-card">
+        <h2>{{ getClienteName(tarea.cliente_id) }}</h2>
+        <div class="detalle-tarea__equipo">{{ getClienteEquipo(tarea.cliente_id) }}</div>
+        <div class="detalle-tarea__campo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>{{ getClienteDireccion(tarea.cliente_id) }}, {{ getClienteCiudad(tarea.cliente_id) }}</span>
+        </div>
+        <div class="detalle-tarea__campo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+          <span>{{ getClienteTelefono(tarea.cliente_id) }}</span>
+        </div>
+        @if (getClienteNotas(tarea.cliente_id)) {
+          <div class="detalle-tarea__notas-cliente">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>{{ getClienteNotas(tarea.cliente_id) }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- ACCESOS RÁPIDOS -->
+      <div class="detalle-tarea__quick-actions">
+        <button class="quick-action" (click)="abrirNavegacion(tarea.cliente_id)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          <span>Navegar</span>
+        </button>
+        <button class="quick-action" (click)="llamarCliente(tarea.cliente_id)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Llamar</span>
+        </button>
+      </div>
+
+      <!-- INFO DEL SERVICIO -->
+      <div class="detalle-tarea__servicio">
+        <h3>Detalle del servicio</h3>
+        <div class="detalle-tarea__servicio-grid">
+          <div class="servicio-item">
+            <span class="servicio-item__label">Tipo</span>
+            <span class="servicio-item__value">{{ getTipoLabel(tarea.tipo_servicio) }}</span>
+          </div>
+          <div class="servicio-item">
+            <span class="servicio-item__label">Hora prevista</span>
+            <span class="servicio-item__value">{{ tarea.hora_estimada }}</span>
+          </div>
+          <div class="servicio-item">
+            <span class="servicio-item__label">Duracion est.</span>
+            <span class="servicio-item__value">~{{ tarea.duracion_estimada }} min</span>
+          </div>
+          <div class="servicio-item">
+            <span class="servicio-item__label">Prioridad</span>
+            <span class="servicio-item__value servicio-item__value--p{{ tarea.prioridad }}">{{ getPrioridadLabel(tarea.prioridad) }}</span>
+          </div>
+        </div>
+        @if (tarea.descripcion) {
+          <div class="detalle-tarea__descripcion">
+            <strong>Descripcion:</strong> {{ tarea.descripcion }}
+          </div>
+        }
+      </div>
+
+      <!-- TIEMPOS REALES -->
+      @if (tarea.hora_inicio || tarea.hora_fin) {
+        <div class="detalle-tarea__tiempos">
+          <h3>Registro de tiempos</h3>
+          @if (tarea.hora_inicio) {
+            <div class="tiempo-row">
+              <span class="tiempo-row__label">Inicio real</span>
+              <span class="tiempo-row__value">{{ tarea.hora_inicio }}</span>
+            </div>
+          }
+          @if (tarea.hora_fin) {
+            <div class="tiempo-row">
+              <span class="tiempo-row__label">Fin real</span>
+              <span class="tiempo-row__value">{{ tarea.hora_fin }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- INCIDENCIA EXISTENTE -->
+      @if (tarea.incidencia) {
+        <div class="detalle-tarea__incidencia-existente">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <strong>Incidencia reportada:</strong>
+            <p>{{ tarea.incidencia }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- ACCIONES PRINCIPALES -->
+      <div class="detalle-tarea__main-actions">
+        @if (tarea.estado === 'pendiente') {
+          <button class="btn-mobile-lg btn-mobile-lg--primary" (click)="iniciarTrabajo(tarea)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar trabajo
+          </button>
+        }
+        @if (tarea.estado === 'en_curso') {
+          <button class="btn-mobile-lg btn-mobile-lg--success" (click)="finalizarTrabajo(tarea)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Trabajo finalizado
+          </button>
+
+          <!-- FORMULARIO DE INCIDENCIA -->
+          <div class="incidencia-form">
+            <h4>Reportar incidencia</h4>
+            <textarea [(ngModel)]="motivoIncidencia" placeholder="Describe el problema..." rows="3"></textarea>
+            <button class="btn-mobile btn-mobile--danger" [disabled]="!motivoIncidencia.trim()" (click)="reportarIncidencia(tarea)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Enviar incidencia
+            </button>
+          </div>
+        }
+        @if (tarea.estado === 'completada') {
+          <div class="estado-final estado-final--success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Servicio completado</span>
+          </div>
+        }
+        @if (tarea.estado === 'incidencia') {
+          <div class="estado-final estado-final--error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Incidencia reportada</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

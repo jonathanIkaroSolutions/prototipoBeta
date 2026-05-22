@@ -1,0 +1,11 @@
+nombre_cliente;nif;telefono;email;direccion;ciudad;codigo_postal;zona;tipo_equipo;marca_equipo;tipo_servicio;fecha_programada;hora_estimada;duracion_estimada;prioridad;descripcion;es_reserva;notas
+Maria Lopez Hernandez;12345678A;612345001;mlopez@gmail.com;Calle Alfonso I 17, 2ºA;Zaragoza;50003;Centro;caldera_gas;Vaillant;mantenimiento;2026-05-25;09:00;45;2;Revision anual caldera;false;
+Carlos Ruiz Martinez;23456789B;612345002;cruiz@hotmail.com;Paseo Independencia 24, 3ºB;Zaragoza;50004;Centro;caldera_gas;Junkers;reparacion;2026-05-25;10:30;60;1;Caldera no enciende;false;Urgente
+Laura Fernandez Gil;34567890C;612345003;lfernandez@gmail.com;Avenida Goya 55, 1ºC;Zaragoza;50006;Universidad;caldera_gas;Baxi;mantenimiento;2026-05-26;09:00;45;2;Mantenimiento preventivo anual;false;
+Javier Moreno Perez;45678901D;612345004;jmoreno@yahoo.es;Calle San Miguel 12, 4ºA;Zaragoza;50001;Centro;caldera_gas;Saunier Duval;revision;2026-05-26;10:00;30;3;Revision periodica;false;
+Patricia Gomez Torres;56789012E;612345005;pgomez@gmail.com;Via Hispanidad 98, 2ºD;Zaragoza;50012;Actur;caldera_gas;Vaillant;reparacion;2026-05-27;09:00;60;1;Fuga de agua en caldera;false;Prioritario
+Roberto Diaz Santos;67890123F;612345006;rdiaz@hotmail.com;Calle Delicias 45, 5ºB;Zaragoza;50007;Delicias;caldera_gas;Junkers;mantenimiento;2026-05-27;10:30;45;2;Revision completa sistema;false;
+Elena Pascual Martin;78901234G;612345007;epascual@gmail.com;Paseo de las Damas 8, 1ºA;Zaragoza;50008;Las Fuentes;caldera_gas;Ferroli;mantenimiento;2026-05-28;09:00;45;2;Mantenimiento anual caldera;false;
+Miguel Angel Soriano;89012345H;612345008;masoriano@yahoo.es;Gran Via 42, 3ºC;Zaragoza;50005;Centro;caldera_gas;Baxi;reparacion;2026-05-29;09:00;50;1;Caldera hace ruido extraño;false;
+Carmen Navarro Ruiz;90123456I;612345009;cnavarro@gmail.com;Calle Zurita 16, 2ºB;Zaragoza;50001;Centro;caldera_gas;Vaillant;revision;2026-05-30;09:00;30;3;Inspeccion ITE gas;false;
+Antonio Blasco Rios;01234567J;612345010;ablasco@hotmail.com;Avenida Cesareo Alierta 72, 4ºA;Zaragoza;50013;Torrero;caldera_gas;Saunier Duval;mantenimiento;2026-05-30;10:30;45;2;Revision preventiva caldera;false;

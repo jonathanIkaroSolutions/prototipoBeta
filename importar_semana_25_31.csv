@@ -1,0 +1,31 @@
+nombre_cliente;nif;telefono;email;direccion;ciudad;codigo_postal;zona;tipo_equipo;marca_equipo;tipo_servicio;fecha_programada;hora_estimada;duracion_estimada;prioridad;descripcion;es_reserva;notas
+Ana Garcia Pueyo;71234567A;976111001;agarcia@gmail.com;Calle de la Manifestacion 22, 1ºA;Zaragoza;50003;Centro;caldera_gas;Vaillant;mantenimiento;2026-05-25;09:00;45;2;Revision anual caldera;false;
+Pedro Lozano Ferrer;71234568B;676222001;plozano@hotmail.com;Paseo de Sagasta 44, 3ºC;Zaragoza;50006;Universidad;caldera_gas;Junkers;reparacion;2026-05-25;09:00;60;1;Caldera pierde presion;false;Urgente
+Rosa Blasco Marin;71234569C;666333001;rblasco@gmail.com;Calle Delicias 18, 2ºB;Zaragoza;50007;Delicias;caldera_gas;Baxi;mantenimiento;2026-05-25;09:00;45;2;Mantenimiento preventivo;false;
+Luis Gracia Serrano;71234570D;976444001;lgracia@yahoo.es;Avenida de Cataluña 80, 4ºA;Zaragoza;50014;Actur;caldera_gas;Saunier Duval;revision;2026-05-25;09:00;30;3;Inspeccion ITE;false;
+Carmen Ruiz Solana;71234571E;650555001;cruiz@gmail.com;Calle de Miguel Servet 32, 1ºD;Zaragoza;50013;Las Fuentes;caldera_gas;Ferroli;mantenimiento;2026-05-26;09:00;45;2;Revision caldera mural;false;
+Javier Pardo Navarro;71234572F;666666001;jpardo@outlook.com;Carretera de Valencia 12, 2ºA;Zaragoza;50016;Sur;caldera_gasoil;Roca;mantenimiento;2026-05-26;09:00;60;2;Limpieza quemador gasoil;false;
+Elena Campos Gil;71234573G;976777001;ecampos@gmail.com;Calle de Alfonso I 18, 5ºB;Zaragoza;50001;Centro;caldera_gas;Vaillant;reparacion;2026-05-26;09:00;60;1;Fuga de agua caldera;false;
+Francisco Millan Arce;71234574H;676888001;fmillan@hotmail.com;Gran Via 28, 3ºA;Zaragoza;50005;Universidad;caldera_gas;Junkers;mantenimiento;2026-05-26;09:00;45;2;Revision anual;false;Edificio nuevo
+Marta Segura Lopez;71234575J;666999001;msegura@gmail.com;Calle de San Juan de la Peña 45, 1ºC;Zaragoza;50012;Actur;caldera_gas;Baxi;mantenimiento;2026-05-26;09:00;45;2;Mantenimiento calderas;false;
+Diego Aranda Torres;71234576K;976110002;daranda@yahoo.es;Paseo de las Damas 8, 4ºB;Zaragoza;50008;Las Fuentes;caldera_gas;Vaillant;revision;2026-05-27;09:00;30;3;Revision periodica;false;
+Isabel Romero Grasa;71234577L;650220002;iromero@gmail.com;Avenida de Navarra 15, 2ºD;Zaragoza;50011;Delicias;caldera_gas;Saunier Duval;mantenimiento;2026-05-27;09:00;45;2;Revision caldera;false;
+Pablo Hernandez Lite;71234578M;666330002;phernandez@outlook.com;Calle del Coso 102, 6ºA;Zaragoza;50004;Centro;caldera_gas;Ferroli;reparacion;2026-05-27;09:00;60;1;No enciende la caldera;false;Urgente
+Lucia Berdejo Sanchez;71234579N;976440002;lberdejo@gmail.com;Calle de Zurita 10, 1ºB;Zaragoza;50001;Centro;caldera_gas;Junkers;mantenimiento;2026-05-27;09:00;45;2;Mantenimiento anual;false;
+Raul Ortega Puig;71234580P;676550002;rortega@hotmail.com;Avenida de Goya 62, 3ºC;Zaragoza;50006;Universidad;caldera_gas;Vaillant;mantenimiento;2026-05-27;09:00;45;2;Revision anual caldera;false;
+Teresa Iborra Calvo;71234581Q;666660002;tiborra@gmail.com;Calle Valle de Broto 30, 2ºA;Zaragoza;50015;Actur;caldera_gas;Baxi;reparacion;2026-05-28;09:00;60;1;Perdida de agua;false;
+Alberto Lazaro Monge;71234582R;976770002;alazaro@yahoo.es;Avenida de San Jose 120, 4ºD;Zaragoza;50010;Las Fuentes;caldera_gasoil;Roca;mantenimiento;2026-05-28;09:00;60;2;Limpieza quemador;false;
+Silvia Morte Gracia;71234583S;650880002;smorte@gmail.com;Paseo de la Corona de Aragon 8, 1ºA;Zaragoza;50009;Universidad;caldera_gas;Saunier Duval;mantenimiento;2026-05-28;09:00;45;2;Revision preventiva;false;
+Enrique Biel Castillo;71234584T;666990002;ebiel@outlook.com;Paseo de la Independencia 15, 7ºB;Zaragoza;50004;Centro;caldera_gas;Vaillant;revision;2026-05-28;09:00;30;3;Inspeccion gas;false;
+Natalia Villar Agudo;71234585U;976110003;nvillar@gmail.com;Calle de Pignatelli 42, 2ºC;Zaragoza;50003;Centro;caldera_gas;Ferroli;mantenimiento;2026-05-28;09:00;45;2;Mantenimiento calderas;false;
+Oscar Sender Forcen;71234586V;676220003;osender@hotmail.com;Via Hispanidad 88, 5ºA;Zaragoza;50012;Actur;caldera_gas;Junkers;reparacion;2026-05-29;09:00;60;1;Caldera hace ruido;false;
+Pilar Alcaine Roy;71234587W;666330003;palcaine@gmail.com;Calle de Pablo Gargallo 5, 1ºB;Zaragoza;50018;Sur;caldera_gas;Baxi;mantenimiento;2026-05-29;09:00;45;2;Revision anual;false;
+Manuel Torralba Sanz;71234588X;976440003;mtorralba@yahoo.es;Avenida del Compromiso de Caspe 14, 3ºD;Zaragoza;50002;Las Fuentes;caldera_gas;Vaillant;mantenimiento;2026-05-29;09:00;45;2;Mantenimiento preventivo;false;
+Cristina Labarta Funes;71234589Y;650550003;clabarta@gmail.com;Calle de Miguel Servet 78, 2ºA;Zaragoza;50013;Las Fuentes;caldera_gas;Saunier Duval;revision;2026-05-29;09:00;30;3;Revision periodica;false;
+Jorge Pardos Muniesa;71234590Z;666660003;jpardos@outlook.com;Calle del Tenor Fleta 50, 4ºC;Zaragoza;50007;Delicias;caldera_gas;Ferroli;mantenimiento;2026-05-29;09:00;45;2;Revision caldera;false;
+Angela Lamelas Bueno;71234591A;976770003;alamelas@gmail.com;Paseo de Sagasta 72, 6ºB;Zaragoza;50006;Universidad;caldera_gas;Junkers;reparacion;2026-05-30;09:00;60;1;Piloto no enciende;false;Urgente
+David Crespo Lalana;71234592B;676880003;dcrespo@hotmail.com;Calle de Don Jaime I 28, 1ºA;Zaragoza;50001;Centro;caldera_gas;Vaillant;mantenimiento;2026-05-30;09:00;45;2;Revision anual;false;
+Veronica Sancho Felipo;71234593C;666990003;vsancho@gmail.com;Avenida de Cesar Augusto 10, 3ºD;Zaragoza;50015;Actur;caldera_gas;Baxi;mantenimiento;2026-05-30;09:00;45;2;Mantenimiento calderas;false;
+Roberto Allue Bordetas;71234594D;976110004;rallue@yahoo.es;Calle de Fray Julian Garces 4, 2ºB;Zaragoza;50019;Sur;caldera_gasoil;Roca;mantenimiento;2026-05-30;09:00;60;2;Limpieza caldera gasoil;false;
+Noelia Puertolas Gil;71234595E;650220004;npuertolas@gmail.com;Plaza de Aragon 3, 5ºA;Zaragoza;50004;Centro;caldera_gas;Saunier Duval;reparacion;2026-05-30;09:00;60;1;No sale agua caliente;false;
+Alejandro Seral Pardo;71234596F;666330004;aseral@outlook.com;Calle de Unceta 22, 1ºC;Zaragoza;50008;Las Fuentes;caldera_gas;Ferroli;mantenimiento;2026-05-31;09:00;45;2;Revision preventiva;false;
