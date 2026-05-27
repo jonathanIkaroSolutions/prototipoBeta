@@ -1,9 +1,11 @@
 ﻿import { Component, signal, computed, inject, effect, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { TitleCasePipe } from '@angular/common';
+import { TitleCasePipe, CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth';
 import { DataService } from '../../../services/data.service';
-import { TareaTurno, Tecnico, Turno, EstadoConfirmacion } from '../../../models/interfaces';
+import { ApiService } from '../../../services/api';
+import { TareaTurno, Tecnico, Turno, EstadoConfirmacion, EstadoTarea, Cliente } from '../../../models/interfaces';
 
 interface TareaSimple {
   id: number;
@@ -50,12 +52,13 @@ const COLORES = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f
 @Component({
   selector: 'app-citas',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TitleCasePipe],
+  imports: [RouterLink, RouterLinkActive, TitleCasePipe, CommonModule, FormsModule],
   templateUrl: './citas.html',
   styleUrls: ['./citas.scss'],
 })
 export class Citas implements OnInit {
   private dataService = inject(DataService);
+  private apiService = inject(ApiService);
   authService = inject(AuthService);
 
   turnos = this.dataService.turnos;
@@ -338,4 +341,306 @@ export class Citas implements OnInit {
   }
 
   logout(): void { this.authService.logout(); }
+
+  // ════════════════════════════════════════════════════════════════════════════════════
+  // ═══ MINI GESTIÓN DE CITAS - TABLA CON CRUD ════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════════════════════
+
+  // Signals para gestión de citas
+  vistaGestion = signal(false);  // Mostrar/ocultar panel de gestión
+  showFormulario = signal(false);
+  editandoCita = signal<TareaTurno | null>(null);
+  
+  // Filtros
+  filtroCliente = signal('');
+  filtroTecnico = signal<number | null>(null);
+  filtroEstado = signal<string>('');
+  filtroFecha = signal('');
+  filtroConfirmacion = signal<string>('');
+
+  // Formulario
+  formCita: TareaTurno = {
+    cliente_id: 0,
+    turno_id: 0,
+    orden: 0,
+    tipo_servicio: 'gas',
+    estado: 'pendiente',
+    hora_estimada: '10:00',
+    duracion_estimada: 45,
+    descripcion: '',
+    prioridad: 2,
+    confirmacion: 'sin_avisar',
+    intentos_contacto: 0,
+    es_reserva: false,
+  };
+
+  // Estados posibles
+  readonly ESTADOS = [
+    { value: 'pendiente', label: 'Pendiente' },
+    { value: 'en_curso', label: 'En curso' },
+    { value: 'completada', label: 'Completada' },
+    { value: 'incidencia', label: 'Incidencia' },
+    { value: 'cancelada', label: 'Cancelada' },
+  ];
+
+  readonly CONFIRMACIONES = [
+    { value: 'sin_avisar', label: 'Pendiente' },
+    { value: 'avisado', label: 'Avisado' },
+    { value: 'confirmado', label: 'Confirmado' },
+    { value: 'no_contesta', label: 'No contesta' },
+    { value: 'no_contesta_dia', label: 'No contesta (día)' },
+    { value: 'rechazado', label: 'Rechazado' },
+    { value: 'promovido', label: 'Promovido' },
+  ];
+
+  readonly TIPOS_SERVICIO = [
+    { value: 'luz', label: 'Alonso LUZ' },
+    { value: 'gas', label: 'Alonso GAS' },
+    { value: 'osmosis', label: 'Alonso ÓSMOSIS' },
+    { value: 'descal', label: 'Alonso DESCAL' },
+    { value: 'ozono', label: 'Alonso OZONO' },
+    { value: 'clima', label: 'Alonso CLIMA' },
+    { value: 'fotovoltaica', label: 'Alonso FOTOVOLTAICA' },
+    { value: 'manitas', label: 'Alonso MANITAS' },
+  ];
+
+  readonly PRIORIDADES = [
+    { value: 1, label: 'Alta' },
+    { value: 2, label: 'Media' },
+    { value: 3, label: 'Baja' },
+  ];
+
+  // ── COMPUTED: Todas las tareas (flatmap de turnos) ───────────────────────────────────
+  todasLasTareas = computed(() => {
+    const turnos = this.turnos();
+    const tareas: TareaTurno[] = [];
+    for (const turno of turnos) {
+      tareas.push(...turno.tareas);
+    }
+    return tareas;
+  });
+
+  // ── COMPUTED: Tareas filtradas ───────────────────────────────────────────────────────
+  tareasFiltradasGestion = computed(() => {
+    let tareas = this.todasLasTareas();
+    const cliente = this.filtroCliente();
+    const tecnico = this.filtroTecnico();
+    const estado = this.filtroEstado();
+    const fecha = this.filtroFecha();
+    const confirmacion = this.filtroConfirmacion();
+
+    // Filtro por cliente (por nombre o id)
+    if (cliente) {
+      const q = cliente.toLowerCase();
+      tareas = tareas.filter(t => {
+        const cli = this.clientes().find(c => c.id === t.cliente_id);
+        return cli?.nombre.toLowerCase().includes(q) || cli?.nif.toLowerCase().includes(q);
+      });
+    }
+
+    // Filtro por técnico
+    if (tecnico) {
+      const turnosTecnico = this.turnos().filter(tu => tu.tecnico_id === tecnico).map(tu => tu.id!);
+      tareas = tareas.filter(t => turnosTecnico.includes(t.turno_id!));
+    }
+
+    // Filtro por estado de tarea
+    if (estado) {
+      tareas = tareas.filter(t => t.estado === estado);
+    }
+
+    // Filtro por confirmación
+    if (confirmacion) {
+      tareas = tareas.filter(t => t.confirmacion === confirmacion);
+    }
+
+    // Filtro por fecha
+    if (fecha) {
+      tareas = tareas.filter(t => {
+        const turno = this.turnos().find(tu => tu.id === t.turno_id);
+        return turno?.fecha === fecha;
+      });
+    }
+
+    // Ordenar por fecha y hora
+    return tareas.sort((a, b) => {
+      const turnoA = this.turnos().find(tu => tu.id === a.turno_id);
+      const turnoB = this.turnos().find(tu => tu.id === b.turno_id);
+      const fechaComp = (turnoB?.fecha || '').localeCompare(turnoA?.fecha || '');
+      if (fechaComp !== 0) return fechaComp;
+      return (a.hora_estimada || '').localeCompare(b.hora_estimada || '');
+    });
+  });
+
+  totalTareasFiltradas = computed(() => this.tareasFiltradasGestion().length);
+
+  // ── MÉTODOS: CRUD ────────────────────────────────────────────────────────────────────
+
+  abrirGestion(): void {
+    this.vistaGestion.set(true);
+  }
+
+  cerrarGestion(): void {
+    this.vistaGestion.set(false);
+  }
+
+  abrirFormularioNueva(): void {
+    this.formCita = this.emptyTarea();
+    this.editandoCita.set(null);
+    this.showFormulario.set(true);
+  }
+
+  editarCita(tarea: TareaTurno): void {
+    this.formCita = { ...tarea };
+    this.editandoCita.set(tarea);
+    this.showFormulario.set(true);
+  }
+
+  cerrarFormulario(): void {
+    this.showFormulario.set(false);
+    this.editandoCita.set(null);
+  }
+
+  guardarCita(): void {
+    const editando = this.editandoCita();
+    
+    if (!this.formCita.cliente_id || !this.formCita.turno_id) {
+      alert('Debe seleccionar cliente y turno');
+      return;
+    }
+
+    if (editando && editando.id) {
+      // Actualizar
+      this.apiService.updateTarea(editando.id, this.formCita).subscribe({
+        next: () => {
+          this.dataService.cargarTodo();
+          this.cerrarFormulario();
+          alert('Cita actualizada correctamente');
+        },
+        error: (err) => {
+          console.error('Error al actualizar cita:', err);
+          alert('Error al actualizar la cita');
+        }
+      });
+    } else {
+      // Crear (aunque esto podría no ser lo más común si las tareas se asignan a través de turnos)
+      // Por ahora mantener para consistencia
+      alert('Las citas se crean a través de la gestión de turnos');
+    }
+  }
+
+  eliminarCita(tarea: TareaTurno): void {
+    if (!tarea.id) return;
+    
+    if (confirm(`¿Eliminar cita con ${this.getNombreCliente(tarea.cliente_id)}?`)) {
+      this.apiService.deleteTarea(tarea.id).subscribe({
+        next: () => {
+          this.dataService.cargarTodo();
+          alert('Cita eliminada correctamente');
+        },
+        error: (err) => {
+          console.error('Error al eliminar cita:', err);
+          alert('Error al eliminar la cita');
+        }
+      });
+    }
+  }
+
+  cambiarEstado(tarea: TareaTurno, nuevoEstado: EstadoTarea): void {
+    if (!tarea.id) return;
+    
+    this.apiService.updateTarea(tarea.id, { estado: nuevoEstado }).subscribe({
+      next: () => {
+        this.dataService.cargarTodo();
+      },
+      error: (err) => {
+        console.error('Error al cambiar estado:', err);
+        alert('Error al cambiar el estado');
+      }
+    });
+  }
+
+  cambiarConfirmacion(tarea: TareaTurno, nuevoEstado: EstadoConfirmacion): void {
+    if (!tarea.id) return;
+    
+    this.apiService.updateTarea(tarea.id, { confirmacion: nuevoEstado }).subscribe({
+      next: () => {
+        this.dataService.cargarTodo();
+      },
+      error: (err) => {
+        console.error('Error al cambiar confirmación:', err);
+        alert('Error al cambiar la confirmación');
+      }
+    });
+  }
+
+  // ── HELPERS ──────────────────────────────────────────────────────────────────────────
+
+  emptyTarea(): TareaTurno {
+    return {
+      cliente_id: 0,
+      turno_id: 0,
+      orden: 0,
+      tipo_servicio: 'gas',
+      estado: 'pendiente',
+      hora_estimada: '10:00',
+      duracion_estimada: 45,
+      descripcion: '',
+      prioridad: 2,
+      confirmacion: 'sin_avisar',
+      intentos_contacto: 0,
+      es_reserva: false,
+    };
+  }
+
+  getNombreCliente(clienteId: number): string {
+    return this.clientes().find(c => c.id === clienteId)?.nombre || 'Desconocido';
+  }
+
+  getNombreTecnico(turnoId: number): string {
+    const turno = this.turnos().find(t => t.id === turnoId);
+    const tecnico = this.tecnicos().find(t => t.id === turno?.tecnico_id);
+    return tecnico ? `${tecnico.first_name} ${tecnico.last_name}` : 'Sin asignar';
+  }
+
+  getFecha(turnoId: number): string {
+    const turno = this.turnos().find(t => t.id === turnoId);
+    return turno?.fecha || '';
+  }
+
+  getEstadoLabel(estado: string): string {
+    return this.ESTADOS.find(e => e.value === estado)?.label || estado;
+  }
+
+  getConfLabel(conf: string): string {
+    return this.CONFIRMACIONES.find(c => c.value === conf)?.label || conf;
+  }
+
+  getTipoServicioLabel(tipo: string): string {
+    return this.TIPOS_SERVICIO.find(t => t.value === tipo)?.label || tipo;
+  }
+
+  getBgEstado(estado: string): string {
+    const map: Record<string, string> = {
+      'pendiente': 'badge--warning',
+      'en_curso': 'badge--info',
+      'completada': 'badge--success',
+      'incidencia': 'badge--danger',
+      'cancelada': 'badge--gray',
+    };
+    return map[estado] || 'badge--gray';
+  }
+
+  getBgConfirmacion(conf: string): string {
+    const map: Record<string, string> = {
+      'sin_avisar': 'badge--gray',
+      'avisado': 'badge--info',
+      'confirmado': 'badge--success',
+      'no_contesta': 'badge--warning',
+      'no_contesta_dia': 'badge--warning',
+      'rechazado': 'badge--danger',
+      'promovido': 'badge--success',
+    };
+    return map[conf] || 'badge--gray';
+  }
 }

@@ -69,6 +69,13 @@ export interface Turno {
   notas_coordinador: string;
 }
 
+export type EstadoTarea =
+  | 'pendiente'
+  | 'en_curso'
+  | 'completada'
+  | 'incidencia'
+  | 'cancelada';
+
 export type EstadoConfirmacion =
   | 'sin_avisar'        // Aún no se ha contactado
   | 'avisado'           // Se llamó, esperando respuesta
@@ -85,7 +92,7 @@ export interface TareaTurno {
   cliente?: Cliente;
   orden: number;
   tipo_servicio: 'luz' | 'gas' | 'osmosis' | 'descal' | 'ozono' | 'clima' | 'fotovoltaica' | 'manitas';
-  estado: 'pendiente' | 'en_curso' | 'completada' | 'incidencia' | 'cancelada';
+  estado: EstadoTarea;
   hora_estimada: string;
   hora_inicio?: string;
   hora_fin?: string;

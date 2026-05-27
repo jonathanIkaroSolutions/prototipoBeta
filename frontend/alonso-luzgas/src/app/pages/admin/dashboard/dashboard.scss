@@ -1847,6 +1847,127 @@
   }
 }
 
+/* ══════ VISTA CITAS (gestión por técnico) ══════ */
+.citas-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border-light);
+    border-left: 3px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+
+    &--success { border-left-color: #2e7d32; }
+    &--warning { border-left-color: #e65100; }
+    &--danger { border-left-color: #c62828; }
+  }
+
+  &__value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1.1;
+  }
+
+  &__label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.citas-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+
+  &__search { flex: 1 1 240px; max-width: 360px; }
+
+  &__select {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-elevated);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+  }
+
+  &__clear {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover { background: var(--color-gray-100); color: var(--color-text-primary); }
+  }
+}
+
+.citas-tec {
+  margin-bottom: var(--space-6);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-surface);
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+
+    &--initials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary);
+      color: white;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+    }
+  }
+
+  &__meta { display: flex; flex-direction: column; }
+  &__name { font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+  &__sub { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+  &__badges {
+    margin-left: auto;
+    display: flex;
+    gap: var(--space-2);
+  }
+}
+
+.citas-table {
+  &__hora { font-variant-numeric: tabular-nums; font-weight: var(--font-weight-medium); white-space: nowrap; }
+  &__tel { color: var(--color-primary); text-decoration: none; &:hover { text-decoration: underline; } }
+}
+
 /* ══════ EXCEL DROPZONE (always visible) ══════ */
 .excel-dropzone {
   display: flex;

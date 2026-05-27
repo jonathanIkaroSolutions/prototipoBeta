@@ -14,6 +14,24 @@ export interface DiaTecnico {
   tareas: { tarea: TareaTurno; cliente?: Cliente }[];
 }
 
+/** Una cita (tarea titular) con el contexto necesario para la vista de Citas */
+export interface CitaZonaRow {
+  tarea: TareaTurno;
+  cliente?: Cliente;
+  fecha: string;
+  tecnicoId: number;
+  turnoId: number;
+}
+
+/** Citas de un técnico agrupadas para la vista de Citas */
+export interface CitasPorTecnico {
+  tecnico: Tecnico;
+  citas: CitaZonaRow[];
+  confirmadas: number;
+  pendientes: number;
+  incidencias: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -302,6 +320,126 @@ export class Dashboard implements OnInit {
       c.nif.toLowerCase().includes(q)
     );
   });
+
+  // ══════ VISTA CITAS (gestión de citas de la zona) ══════
+  citasBusqueda = signal('');
+  citasFiltroTecnico = signal<number | null>(null);
+  citasFiltroFecha = signal('');
+  citasFiltroConfirmacion = signal('');
+
+  readonly CONFIRMACIONES_OPC: { value: EstadoConfirmacion; label: string }[] = [
+    { value: 'sin_avisar', label: 'Sin avisar' },
+    { value: 'avisado', label: 'Avisado' },
+    { value: 'confirmado', label: 'Confirmado' },
+    { value: 'no_contesta', label: 'No contesta' },
+    { value: 'no_contesta_dia', label: 'No contesta (día)' },
+    { value: 'rechazado', label: 'Rechazado' },
+    { value: 'promovido', label: 'Promovido' },
+  ];
+
+  /** Todas las citas (titulares) de la zona, aplicando filtros, ordenadas por fecha+hora */
+  citasZonaRows = computed<CitaZonaRow[]>(() => {
+    const zid = this.zonaSeleccionada();
+    if (!zid) return [];
+
+    const tecnicosZonaIds = new Set(
+      this.dataService.tecnicos().filter(t => t.zona_id === zid).map(t => t.id)
+    );
+    const clientes = this.dataService.clientes();
+    const fTec = this.citasFiltroTecnico();
+    const fFecha = this.citasFiltroFecha();
+    const fConf = this.citasFiltroConfirmacion();
+    const q = this.citasBusqueda().toLowerCase().trim();
+
+    const rows: CitaZonaRow[] = [];
+    for (const turno of this.dataService.turnos()) {
+      if (!tecnicosZonaIds.has(turno.tecnico_id)) continue;
+      if (fTec && turno.tecnico_id !== fTec) continue;
+      if (fFecha && turno.fecha !== fFecha) continue;
+
+      for (const tarea of turno.tareas) {
+        if (tarea.es_reserva) continue;
+        if (fConf && tarea.confirmacion !== fConf) continue;
+
+        const cliente = clientes.find(c => c.id === tarea.cliente_id);
+        if (q) {
+          const coincide =
+            cliente?.nombre.toLowerCase().includes(q) ||
+            cliente?.telefono.includes(q) ||
+            cliente?.direccion.toLowerCase().includes(q) ||
+            cliente?.nif.toLowerCase().includes(q);
+          if (!coincide) continue;
+        }
+
+        rows.push({ tarea, cliente, fecha: turno.fecha, tecnicoId: turno.tecnico_id, turnoId: turno.id! });
+      }
+    }
+
+    return rows.sort((a, b) =>
+      a.fecha.localeCompare(b.fecha) ||
+      (a.tarea.hora_estimada || '').localeCompare(b.tarea.hora_estimada || '')
+    );
+  });
+
+  /** Citas de la zona agrupadas por técnico (solo técnicos con citas tras los filtros) */
+  citasZonaPorTecnico = computed<CitasPorTecnico[]>(() => {
+    const zid = this.zonaSeleccionada();
+    if (!zid) return [];
+    const rows = this.citasZonaRows();
+    const tecnicos = this.dataService.tecnicos().filter(t => t.zona_id === zid);
+
+    return tecnicos
+      .map(tecnico => {
+        const citas = rows.filter(r => r.tecnicoId === tecnico.id);
+        return {
+          tecnico,
+          citas,
+          confirmadas: citas.filter(r => r.tarea.confirmacion === 'confirmado').length,
+          pendientes: citas.filter(r => r.tarea.confirmacion === 'sin_avisar' || r.tarea.confirmacion === 'avisado').length,
+          incidencias: citas.filter(r => r.tarea.estado === 'incidencia' || r.tarea.confirmacion === 'rechazado').length,
+        };
+      })
+      .filter(g => g.citas.length > 0)
+      .sort((a, b) => `${a.tecnico.first_name} ${a.tecnico.last_name}`.localeCompare(`${b.tecnico.first_name} ${b.tecnico.last_name}`));
+  });
+
+  /** Resumen numérico de las citas de la zona (con filtros aplicados) */
+  citasZonaStats = computed(() => {
+    const rows = this.citasZonaRows();
+    return {
+      total: rows.length,
+      confirmadas: rows.filter(r => r.tarea.confirmacion === 'confirmado').length,
+      pendientes: rows.filter(r => r.tarea.confirmacion === 'sin_avisar' || r.tarea.confirmacion === 'avisado').length,
+      incidencias: rows.filter(r => r.tarea.estado === 'incidencia' || r.tarea.confirmacion === 'rechazado').length,
+    };
+  });
+
+  /** Fechas con citas en la zona (para el desplegable de filtro), ignorando el filtro de fecha */
+  citasZonaFechasDisponibles = computed<string[]>(() => {
+    const zid = this.zonaSeleccionada();
+    if (!zid) return [];
+    const tecnicosZonaIds = new Set(
+      this.dataService.tecnicos().filter(t => t.zona_id === zid).map(t => t.id)
+    );
+    const fechas = new Set<string>();
+    for (const turno of this.dataService.turnos()) {
+      if (tecnicosZonaIds.has(turno.tecnico_id) && turno.tareas.some(ta => !ta.es_reserva)) {
+        fechas.add(turno.fecha);
+      }
+    }
+    return Array.from(fechas).sort();
+  });
+
+  limpiarFiltrosCitas(): void {
+    this.citasBusqueda.set('');
+    this.citasFiltroTecnico.set(null);
+    this.citasFiltroFecha.set('');
+    this.citasFiltroConfirmacion.set('');
+  }
+
+  getIniciales(nombre: string, apellido: string): string {
+    return `${nombre?.[0] || ''}${apellido?.[0] || ''}`.toUpperCase();
+  }
 
   ngOnInit(): void {
     this.dataService.cargarTodo();

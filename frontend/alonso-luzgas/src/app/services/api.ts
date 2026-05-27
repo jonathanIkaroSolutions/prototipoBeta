@@ -44,6 +44,14 @@ export class ApiService {
     return this.http.get<TareaTurno[]>(`${this.API_URL}/tareas/`, { params: httpParams });
   }
 
+  updateTarea(id: number, tarea: Partial<TareaTurno>): Observable<TareaTurno> {
+    return this.http.patch<TareaTurno>(`${this.API_URL}/tareas/${id}/`, tarea);
+  }
+
+  deleteTarea(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/tareas/${id}/`);
+  }
+
   // Turnos
   getTurnos(params?: { tecnico?: number; fecha?: string }): Observable<Turno[]> {
     let httpParams = new HttpParams();

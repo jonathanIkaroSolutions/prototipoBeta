@@ -64,7 +64,26 @@
 
   <main class="main-content">
 
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="top-bar__left">
+        <h1>Citas</h1>
+        <span class="top-bar__stat">{{ totalTareasFiltradas() }} cita{{ totalTareasFiltradas() !== 1 ? 's' : '' }}</span>
+      </div>
+      <div class="top-bar__right">
+        <button class="btn" [class.btn--primary]="!vistaGestion()" [class.btn--outline]="vistaGestion()" (click)="vistaGestion() ? cerrarGestion() : null">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Calendario
+        </button>
+        <button class="btn" [class.btn--primary]="vistaGestion()" [class.btn--outline]="!vistaGestion()" (click)="!vistaGestion() ? abrirGestion() : cerrarGestion()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 6 21 6 21 20 3 20 3 6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Gestión
+        </button>
+      </div>
+    </div>
+
     <!-- LAYOUT 2x2: calendario+reservas arriba | técnicos+incidencias abajo -->
+    @if (!vistaGestion()) {
     <div class="citas-layout">
 
       <!-- ═══ ZONA SUPERIOR: CALENDARIO + RESERVAS ═══ -->
@@ -317,6 +336,225 @@
       </div>
 
     </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ═══ MINI GESTIÓN DE CITAS - TABLA DE CRUD ════════════════ -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    
+    @if (vistaGestion()) {
+    <div class="gestion-panel">
+      <div class="gestion-header">
+        <h2>Gestión de Citas</h2>
+        <button class="btn btn--secondary" (click)="cerrarGestion()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Cerrar
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <div class="gestion-filters">
+        <div class="filter-group">
+          <label>Cliente</label>
+          <input type="text" [ngModel]="filtroCliente()" (ngModelChange)="filtroCliente.set($event)" placeholder="Buscar cliente...">
+        </div>
+        <div class="filter-group">
+          <label>Técnico</label>
+          <select [ngModel]="filtroTecnico()" (ngModelChange)="filtroTecnico.set($event ? +$event : null)">
+            <option value="">Todos</option>
+            @for (tec of tecnicos(); track tec.id) {
+              <option [value]="tec.id">{{ tec.first_name }} {{ tec.last_name }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Estado</label>
+          <select [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+            <option value="">Todos</option>
+            @for (est of ESTADOS; track est.value) {
+              <option [value]="est.value">{{ est.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Confirmación</label>
+          <select [ngModel]="filtroConfirmacion()" (ngModelChange)="filtroConfirmacion.set($event)">
+            <option value="">Todas</option>
+            @for (conf of CONFIRMACIONES; track conf.value) {
+              <option [value]="conf.value">{{ conf.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Fecha</label>
+          <input type="date" [ngModel]="filtroFecha()" (ngModelChange)="filtroFecha.set($event)">
+        </div>
+        <button class="btn btn--outline btn--sm" (click)="filtroCliente.set(''); filtroTecnico.set(null); filtroEstado.set(''); filtroConfirmacion.set(''); filtroFecha.set('')">
+          Limpiar filtros
+        </button>
+      </div>
+
+      <!-- Tabla de citas -->
+      <div class="gestion-table-wrap">
+        <div class="gestion-top">
+          <span class="gestion-count">{{ totalTareasFiltradas() }} cita{{ totalTareasFiltradas() !== 1 ? 's' : '' }}</span>
+          <button class="btn btn--primary btn--sm" (click)="abrirFormularioNueva()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nueva cita
+          </button>
+        </div>
+
+        @if (tareasFiltradasGestion().length === 0) {
+          <div class="table-empty">
+            <p>No hay citas que coincidan con los filtros</p>
+          </div>
+        } @else {
+          <table class="gestion-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Técnico</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Confirmación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tarea of tareasFiltradasGestion(); track tarea.id) {
+              <tr>
+                <td class="cell-cliente">{{ getNombreCliente(tarea.cliente_id) }}</td>
+                <td>{{ getNombreTecnico(tarea.turno_id!) }}</td>
+                <td>{{ getFecha(tarea.turno_id!) }}</td>
+                <td class="cell-hora">{{ tarea.hora_estimada }}</td>
+                <td><span class="badge badge--sm">{{ getTipoServicioLabel(tarea.tipo_servicio) }}</span></td>
+                <td>
+                  <span [class]="'badge badge--sm ' + getBgEstado(tarea.estado)">{{ getEstadoLabel(tarea.estado) }}</span>
+                </td>
+                <td>
+                  <span [class]="'badge badge--sm ' + getBgConfirmacion(tarea.confirmacion)">{{ getConfLabel(tarea.confirmacion) }}</span>
+                </td>
+                <td class="cell-actions">
+                  <button class="btn-icon btn-icon--xs" title="Editar" (click)="editarCita(tarea)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L21 5z"/></svg>
+                  </button>
+                  <button class="btn-icon btn-icon--xs btn-icon--danger" title="Eliminar" (click)="eliminarCita(tarea)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Modal: Formulario de cita -->
+    @if (showFormulario()) {
+    <div class="modal-overlay" (click)="cerrarFormulario()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editandoCita() ? 'Editar cita' : 'Nueva cita' }}</h3>
+          <button class="btn-icon" (click)="cerrarFormulario()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <form class="modal-body" (ngSubmit)="guardarCita()">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cliente *</label>
+              <select [(ngModel)]="formCita.cliente_id" name="cliente" required>
+                <option value="">Seleccionar cliente...</option>
+                @for (cli of clientes(); track cli.id) {
+                  <option [value]="cli.id">{{ cli.nombre }} - {{ cli.telefono }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Turno *</label>
+              <select [(ngModel)]="formCita.turno_id" name="turno" required>
+                <option value="">Seleccionar turno...</option>
+                @for (turno of turnos(); track turno.id) {
+                  <option [value]="turno.id">
+                    {{ getNombreTecnico(turno.id!) }} - {{ turno.fecha }} ({{ turno.tipo_turno }})
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de servicio</label>
+              <select [(ngModel)]="formCita.tipo_servicio" name="tipoServicio">
+                @for (tipo of TIPOS_SERVICIO; track tipo.value) {
+                  <option [value]="tipo.value">{{ tipo.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Hora estimada</label>
+              <input type="time" [(ngModel)]="formCita.hora_estimada" name="horaEstimada">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Estado</label>
+              <select [(ngModel)]="formCita.estado" name="estado">
+                @for (est of ESTADOS; track est.value) {
+                  <option [value]="est.value">{{ est.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Confirmación</label>
+              <select [(ngModel)]="formCita.confirmacion" name="confirmacion">
+                @for (conf of CONFIRMACIONES; track conf.value) {
+                  <option [value]="conf.value">{{ conf.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prioridad</label>
+              <select [(ngModel)]="formCita.prioridad" name="prioridad">
+                @for (pri of PRIORIDADES; track pri.value) {
+                  <option [value]="pri.value">{{ pri.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Duración (minutos)</label>
+              <input type="number" [(ngModel)]="formCita.duracion_estimada" name="duracion" min="15" step="15">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea [(ngModel)]="formCita.descripcion" name="descripcion" rows="3" placeholder="Detalles de la tarea..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Incidencia</label>
+            <textarea [(ngModel)]="formCita.incidencia" name="incidencia" rows="2" placeholder="Si hay incidencia, detallar..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn--secondary" (click)="cerrarFormulario()">Cancelar</button>
+            <button type="submit" class="btn btn--primary">{{ editandoCita() ? 'Guardar cambios' : 'Crear cita' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    }
 
   </main>
 </div>

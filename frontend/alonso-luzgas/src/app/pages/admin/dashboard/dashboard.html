@@ -362,11 +362,125 @@
       @case ('citas') {
         <header class="main-content__header">
           <h1>Citas</h1>
-          <p>Calendario de citas de {{ zonaNombre() }}</p>
+          <p>Gestión de citas de {{ zonaNombre() }} — clientes asignados a cada técnico</p>
         </header>
-        <div class="placeholder-view">
-          <p>Vista de citas filtrada por {{ zonaNombre() }} (en desarrollo)</p>
+
+        <!-- Resumen -->
+        <div class="citas-resumen">
+          <div class="citas-resumen__card">
+            <span class="citas-resumen__value">{{ citasZonaStats().total }}</span>
+            <span class="citas-resumen__label">Citas</span>
+          </div>
+          <div class="citas-resumen__card citas-resumen__card--success">
+            <span class="citas-resumen__value">{{ citasZonaStats().confirmadas }}</span>
+            <span class="citas-resumen__label">Confirmadas</span>
+          </div>
+          <div class="citas-resumen__card citas-resumen__card--warning">
+            <span class="citas-resumen__value">{{ citasZonaStats().pendientes }}</span>
+            <span class="citas-resumen__label">Pendientes</span>
+          </div>
+          <div class="citas-resumen__card citas-resumen__card--danger">
+            <span class="citas-resumen__value">{{ citasZonaStats().incidencias }}</span>
+            <span class="citas-resumen__label">Incidencias</span>
+          </div>
         </div>
+
+        <!-- Filtros -->
+        <div class="citas-toolbar">
+          <div class="clientes-search citas-toolbar__search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar cliente, teléfono, NIF..." [value]="citasBusqueda()" (input)="citasBusqueda.set($any($event.target).value)" class="clientes-search__input" />
+          </div>
+          <select class="citas-toolbar__select" [value]="citasFiltroTecnico() ?? ''" (change)="citasFiltroTecnico.set($any($event.target).value ? +$any($event.target).value : null)">
+            <option value="">Todos los técnicos</option>
+            @for (tec of tecnicosZona(); track tec.id) {
+              <option [value]="tec.id">{{ tec.first_name }} {{ tec.last_name }}</option>
+            }
+          </select>
+          <select class="citas-toolbar__select" [value]="citasFiltroFecha()" (change)="citasFiltroFecha.set($any($event.target).value)">
+            <option value="">Todas las fechas</option>
+            @for (f of citasZonaFechasDisponibles(); track f) {
+              <option [value]="f">{{ formatFechaConDia(f) }}</option>
+            }
+          </select>
+          <select class="citas-toolbar__select" [value]="citasFiltroConfirmacion()" (change)="citasFiltroConfirmacion.set($any($event.target).value)">
+            <option value="">Toda confirmación</option>
+            @for (c of CONFIRMACIONES_OPC; track c.value) {
+              <option [value]="c.value">{{ c.label }}</option>
+            }
+          </select>
+          @if (citasBusqueda() || citasFiltroTecnico() || citasFiltroFecha() || citasFiltroConfirmacion()) {
+            <button class="citas-toolbar__clear" (click)="limpiarFiltrosCitas()">Limpiar</button>
+          }
+        </div>
+
+        <!-- Citas agrupadas por técnico -->
+        @for (grupo of citasZonaPorTecnico(); track grupo.tecnico.id) {
+          <div class="citas-tec">
+            <div class="citas-tec__header">
+              @if (grupo.tecnico.foto) {
+                <img class="citas-tec__avatar" [src]="grupo.tecnico.foto" [alt]="grupo.tecnico.first_name" />
+              } @else {
+                <div class="citas-tec__avatar citas-tec__avatar--initials">{{ getIniciales(grupo.tecnico.first_name, grupo.tecnico.last_name) }}</div>
+              }
+              <div class="citas-tec__meta">
+                <span class="citas-tec__name">{{ grupo.tecnico.first_name }} {{ grupo.tecnico.last_name }}</span>
+                <span class="citas-tec__sub">{{ grupo.tecnico.especialidad | titlecase }} · {{ grupo.citas.length }} cita{{ grupo.citas.length !== 1 ? 's' : '' }}</span>
+              </div>
+              <div class="citas-tec__badges">
+                <span class="badge badge--success">{{ grupo.confirmadas }} conf.</span>
+                <span class="badge badge--warning">{{ grupo.pendientes }} pend.</span>
+                @if (grupo.incidencias > 0) {
+                  <span class="badge badge--danger">{{ grupo.incidencias }} inc.</span>
+                }
+              </div>
+            </div>
+
+            <div class="clientes-table-wrap">
+              <table class="clientes-table citas-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Cliente</th>
+                    <th>Teléfono</th>
+                    <th>Servicio</th>
+                    <th>Estado</th>
+                    <th>Confirmación</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (c of grupo.citas; track c.tarea.id) {
+                    <tr>
+                      <td>{{ formatFechaConDia(c.fecha) }}</td>
+                      <td class="citas-table__hora">{{ c.tarea.hora_estimada || '—' }}</td>
+                      <td>
+                        <div class="clientes-table__name">{{ c.cliente?.nombre || 'Desconocido' }}</div>
+                        <div class="clientes-table__city">{{ c.cliente?.direccion }}</div>
+                      </td>
+                      <td>
+                        @if (c.cliente?.telefono) {
+                          <a class="citas-table__tel" href="tel:{{ c.cliente?.telefono }}">{{ c.cliente?.telefono }}</a>
+                        } @else { — }
+                      </td>
+                      <td><span class="badge badge--muted">{{ getTipoLabel(c.tarea.tipo_servicio) }}</span></td>
+                      <td><span [class]="'badge badge--' + getEstadoClass(c.tarea.estado)">{{ c.tarea.estado | titlecase }}</span></td>
+                      <td><span [class]="'badge badge--' + getConfirmacionClass(c.tarea.confirmacion)">{{ getConfirmacionLabel(c.tarea.confirmacion) }}</span></td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        } @empty {
+          <div class="placeholder-view">
+            @if (citasZonaFechasDisponibles().length === 0) {
+              <p>No hay citas registradas en {{ zonaNombre() }}.</p>
+            } @else {
+              <p>No hay citas que coincidan con los filtros seleccionados.</p>
+            }
+          </div>
+        }
       }
 
       @case ('tecnicos') {

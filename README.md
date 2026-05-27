@@ -11,6 +11,7 @@ prototipoBeta/
 ├── backend/          # Django REST API
 │   ├── core/         # Settings y configuración
 │   ├── api/          # App con modelos, vistas, serializers
+│   ├── venv/         # Virtual environment Python
 │   └── manage.py
 ├── frontend/         # Angular 19 (standalone components)
 │   └── alonso-luzgas/
@@ -27,7 +28,7 @@ prototipoBeta/
 │           ├── guards/              # Auth guard
 │           ├── interceptors/        # HTTP interceptor
 │           └── models/              # Interfaces TypeScript
-└── .venv/            # Virtual environment Python
+└── ...
 ```
 
 ## Funcionalidades
@@ -52,13 +53,16 @@ prototipoBeta/
 ## Cómo ejecutar
 
 ### Backend (Django)
-```bash
+```powershell
 cd backend
-# Activar entorno virtual
-..\.venv\Scripts\activate   # Windows
+# Activar entorno virtual (Windows / PowerShell)
+.\venv\Scripts\Activate.ps1
+# (CMD: venv\Scripts\activate.bat)
 # Ejecutar servidor
 python manage.py runserver
 ```
+
+> El entorno virtual está en `backend/venv`.
 
 ### Frontend (Angular)
 ```bash
